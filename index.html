@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اختبار الحاسبات | ياسر عمار عبد</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Orbitron:wght@400;700;900&display=swap');
+:root{
+  --bg:#040d1a;--panel:#071428;--panel2:#0a1e38;
+  --cyan:#00e5ff;--cyan2:#00b4d8;--green:#00ff9d;
+  --gold:#ffd700;--red:#ff4757;
+  --border:rgba(0,229,255,.18);--text:#cde4f5;--muted:#5a8aaa;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+#cvs{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.3}
+
+/* LOGIN */
+#loginPage{position:relative;z-index:10;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem}
+.login-box{background:linear-gradient(135deg,rgba(7,20,40,.97),rgba(10,30,56,.99));border:1px solid var(--cyan);border-radius:18px;padding:2.5rem 2rem;width:100%;max-width:440px;box-shadow:0 0 60px rgba(0,229,255,.15);animation:fadeIn .8s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.login-logo{text-align:center;margin-bottom:1.5rem}
+.login-icon{font-size:3.2rem;line-height:1;margin-bottom:.5rem;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 8px rgba(0,229,255,.5))}50%{filter:drop-shadow(0 0 20px rgba(0,229,255,.9))}}
+.login-sys{font-family:'Orbitron',monospace;font-size:1rem;color:var(--cyan);letter-spacing:.1em;margin-bottom:.2rem}
+.login-sub-title{font-size:.78rem;color:var(--muted)}
+.login-title{font-size:1.35rem;font-weight:700;color:var(--text);text-align:center;margin:1.2rem 0 .3rem}
+.login-info{font-size:.8rem;color:var(--muted);text-align:center;margin-bottom:1.8rem}
+.form-group{margin-bottom:1.3rem}
+.form-group label{display:block;font-size:.82rem;color:var(--cyan);margin-bottom:.4rem;font-weight:600}
+.form-group input{width:100%;padding:.78rem 1rem;background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.28);border-radius:8px;color:var(--text);font-family:'Cairo',sans-serif;font-size:.95rem;outline:none;transition:border .3s,box-shadow .3s;text-align:right}
+.form-group input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,229,255,.1)}
+.form-group input::placeholder{color:var(--muted)}
+.btn-start{width:100%;padding:.88rem;background:linear-gradient(90deg,var(--cyan2),var(--cyan));border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:1.05rem;font-weight:700;color:#040d1a;cursor:pointer;transition:transform .2s,box-shadow .2s;letter-spacing:.04em}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(0,229,255,.35)}
+.login-footer{text-align:center;margin-top:1.5rem;font-size:.76rem;color:var(--muted)}
+.login-footer span{color:var(--cyan)}
+
+/* EXAM */
+#examPage{display:none;position:relative;z-index:10;min-height:100vh;padding:0 0 3rem}
+.topbar{background:linear-gradient(90deg,var(--panel),var(--panel2));border-bottom:2px solid var(--cyan);padding:.68rem 1.4rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.topbar-left{display:flex;flex-direction:column;gap:.12rem}
+.topbar-sys{font-family:'Orbitron',monospace;font-size:.68rem;color:var(--cyan);letter-spacing:.08em}
+.topbar-name{font-size:.88rem;font-weight:700;color:var(--text)}
+.prog-wrap{flex:1;max-width:240px;margin:0 .8rem}
+.prog-labels{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-bottom:.28rem}
+.prog-bar{height:6px;background:rgba(0,229,255,.1);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--cyan2),var(--cyan));border-radius:3px;transition:width .4s ease}
+.sec-dots{display:flex;gap:.4rem}
+.sd{width:26px;height:26px;border-radius:50%;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:var(--muted);transition:all .3s;font-family:'Orbitron',monospace}
+.sd.done{border-color:var(--green);color:var(--green);background:rgba(0,255,157,.1)}
+.sd.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,.1);box-shadow:0 0 10px rgba(0,229,255,.28)}
+
+.sec-hdr{background:linear-gradient(135deg,var(--panel2),rgba(0,229,255,.05));border:1px solid var(--border);border-radius:12px;margin:1.1rem 1.1rem .7rem;padding:.9rem 1.3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.sec-hdr-en{font-size:1.05rem;font-weight:900;color:var(--cyan)}
+.sec-hdr-ar{font-size:.82rem;color:var(--muted);margin-top:.1rem}
+.sec-badge{background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.25);color:var(--cyan);border-radius:20px;padding:.18rem .7rem;font-size:.7rem;font-weight:700}
+
+.qs-wrap{padding:0 1.1rem}
+.q-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;margin-bottom:.9rem;overflow:hidden;animation:slideUp .3s ease both}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.q-card:nth-child(2){animation-delay:.04s}.q-card:nth-child(3){animation-delay:.08s}.q-card:nth-child(4){animation-delay:.12s}
+.q-num{background:linear-gradient(90deg,rgba(0,229,255,.1),transparent);padding:.45rem 1.1rem;font-size:.68rem;font-weight:700;color:var(--cyan);letter-spacing:.08em;border-bottom:1px solid var(--border)}
+.q-text{padding:.85rem 1.1rem .65rem;font-size:.93rem;font-weight:700;color:var(--text);line-height:1.6}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:.45rem .7rem;padding:.25rem 1.1rem .9rem}
+@media(max-width:600px){.opts{grid-template-columns:1fr}}
+.opt{display:flex;align-items:flex-start;gap:.45rem;padding:.55rem .75rem;border-radius:8px;background:rgba(0,229,255,.03);border:1.5px solid rgba(0,229,255,.1);cursor:pointer;transition:all .2s;font-size:.84rem;color:var(--muted);text-align:right;user-select:none;line-height:1.4}
+.opt:hover{background:rgba(0,229,255,.07);border-color:rgba(0,229,255,.28);color:var(--text)}
+.opt.selected{background:rgba(0,229,255,.1);border-color:var(--cyan);color:var(--cyan)}
+.opt-c{min-width:1.4rem;height:1.4rem;border-radius:50%;border:2px solid rgba(0,229,255,.28);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;font-family:'Orbitron',monospace;color:var(--muted);flex-shrink:0;transition:all .2s;margin-top:.08rem}
+.opt.selected .opt-c{border-color:var(--cyan);background:var(--cyan);color:#040d1a}
+.opt.ok{background:rgba(0,255,157,.08)!important;border-color:var(--green)!important;color:var(--green)!important;pointer-events:none}
+.opt.ok .opt-c{border-color:var(--green)!important;background:var(--green)!important;color:#040d1a!important}
+.opt.bad{background:rgba(255,71,87,.08)!important;border-color:var(--red)!important;color:var(--red)!important;pointer-events:none}
+.opt.bad .opt-c{border-color:var(--red)!important;background:var(--red)!important;color:#fff!important}
+.opt.dis{pointer-events:none}
+
+.submit-wrap{padding:.9rem 1.1rem 0;text-align:center}
+.btn-sub{padding:.82rem 2.2rem;background:linear-gradient(90deg,#007ea7,var(--cyan));border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;color:#040d1a;cursor:pointer;transition:transform .2s,box-shadow .2s;letter-spacing:.04em}
+.btn-sub:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,229,255,.28)}
+.btn-sub:disabled{opacity:.35;cursor:not-allowed;transform:none}
+
+/* RESULT */
+.res-page{display:none;position:relative;z-index:10;min-height:100vh;padding:2rem 1.1rem 4rem}
+.res-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:1.8rem 1.4rem;max-width:720px;margin:0 auto 1.4rem;animation:fadeIn .5s ease}
+.res-title{font-family:'Orbitron',monospace;font-size:.95rem;color:var(--cyan);text-align:center;letter-spacing:.08em;margin-bottom:.35rem}
+.res-name{font-size:1.05rem;font-weight:700;text-align:center;color:var(--text);margin-bottom:1.3rem}
+.score-ring{width:110px;height:110px;border-radius:50%;margin:0 auto 1.1rem;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-num{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;line-height:1}
+.score-lbl{font-size:.68rem;color:var(--muted);margin-top:.18rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1.3rem;text-align:center}
+.stat{background:rgba(0,229,255,.04);border:1px solid var(--border);border-radius:10px;padding:.7rem .4rem}
+.sv{font-family:'Orbitron',monospace;font-size:1.2rem;font-weight:900;margin-bottom:.18rem}
+.sv.g{color:var(--green)}.sv.r{color:var(--red)}.sv.y{color:var(--gold)}
+.sl{font-size:.7rem;color:var(--muted)}
+.divider{height:1px;background:var(--border);margin:1.1rem 0}
+.wrong-title{font-size:.88rem;font-weight:700;color:var(--cyan);margin-bottom:.7rem}
+.wi{background:rgba(255,71,87,.05);border:1px solid rgba(255,71,87,.18);border-radius:10px;padding:.8rem .9rem;margin-bottom:.6rem}
+.wi-q{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:.45rem;line-height:1.5}
+.wi-tags{display:flex;flex-wrap:wrap;gap:.4rem;font-size:.78rem}
+.wi-bad{background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.25);color:var(--red);padding:.22rem .55rem;border-radius:6px}
+.wi-ok{background:rgba(0,255,157,.08);border:1px solid rgba(0,255,157,.25);color:var(--green);padding:.22rem .55rem;border-radius:6px}
+.btn-next{display:block;width:100%;max-width:360px;margin:.5rem auto 0;padding:.88rem;background:linear-gradient(90deg,var(--cyan2),var(--cyan));border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;color:#040d1a;cursor:pointer;transition:transform .2s,box-shadow .2s;letter-spacing:.04em}
+.btn-next:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,229,255,.28)}
+.btn-gold{background:linear-gradient(90deg,#b8862a,var(--gold))!important}
+
+/* FINAL */
+.final-banner{text-align:center;padding:1.4rem;background:linear-gradient(135deg,rgba(0,229,255,.07),rgba(0,255,157,.05));border:1px solid var(--cyan);border-radius:14px;margin-bottom:1.3rem}
+.final-t{font-family:'Orbitron',monospace;font-size:1.1rem;color:var(--cyan);margin-bottom:.4rem}
+.final-score{font-size:3rem;font-weight:900;font-family:'Orbitron',monospace}
+.final-score small{font-size:1.1rem;color:var(--muted)}
+.final-grade{font-size:1.1rem;font-weight:700;margin-top:.25rem}
+.final-msg{font-size:.9rem;color:var(--text);margin-top:.4rem}
+</style>
+</head>
+<body>
+<canvas id="cvs"></canvas>
+
+<!-- LOGIN -->
+<div id="loginPage">
+<div class="login-box">
+  <div class="login-logo">
+    <div class="login-icon">🖥️</div>
+    <div class="login-sys">COMPUTER SCIENCE EXAM</div>
+    <div class="login-sub-title">م.م. إيناس سعيد مراد &nbsp;·&nbsp; كلية التربية</div>
+  </div>
+  <div class="login-title">اختبار مادة الحاسبات</div>
+  <div class="login-info">المحاضرات 4 – 8 &nbsp;·&nbsp; 100 سؤال &nbsp;·&nbsp; 4 أقسام</div>
+  <div class="form-group">
+    <label>الاسم الثلاثي</label>
+    <input type="text" id="studentName" placeholder="أدخل اسمك الثلاثي كاملاً">
+  </div>
+  <button class="btn-start" onclick="startExam()">▶ ابدأ الاختبار</button>
+  <div class="login-footer">إعداد: <span>ياسر عمار عبد</span></div>
+</div>
+</div>
+
+<!-- EXAM -->
+<div id="examPage">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-sys">EXAM SYSTEM</div>
+      <div class="topbar-name" id="tbName">—</div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-labels"><span id="pLbl">القسم 1/4</span><span id="pCnt">0/25</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="pFill" style="width:0%"></div></div>
+    </div>
+    <div class="sec-dots">
+      <div class="sd active" id="d1">1</div>
+      <div class="sd" id="d2">2</div>
+      <div class="sd" id="d3">3</div>
+      <div class="sd" id="d4">4</div>
+    </div>
+  </div>
+  <div class="sec-hdr" id="secHdr">
+    <div>
+      <div class="sec-hdr-en" id="secEn">—</div>
+      <div class="sec-hdr-ar" id="secAr">—</div>
+    </div>
+    <div class="sec-badge" id="secBadge">—</div>
+  </div>
+  <div class="qs-wrap" id="qWrap"></div>
+  <div class="submit-wrap">
+    <button class="btn-sub" id="btnSub" onclick="submitSec()" disabled>تسليم إجابات القسم ▶</button>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="resPage" class="res-page">
+  <div class="res-card" id="resCard"></div>
+</div>
+
+<!-- FINAL -->
+<div id="finalPage" class="res-page">
+  <div class="res-card" id="finalCard"></div>
+</div>
+
+<script>
+const QS = [{"s": 1, "q": "برنامج Microsoft Word هو نوع من:", "opts": ["أنظمة التشغيل", "برامج معالجة النصوص", "برامج الرسم", "قواعد البيانات"], "ans": 1}, {"s": 1, "q": "WYSIWYG تعني أن ما تراه على الشاشة:", "opts": ["يختلف عن النتيجة النهائية", "هو نفسه ما ستحصل عليه عند الطباعة", "أسرع من الطباعة", "أبطأ من الطباعة"], "ans": 1}, {"s": 1, "q": "محرر النصوص (Text Editor) يُستخدم عادةً من قِبل:", "opts": ["الأطفال في المدارس", "المبرمجين والمطورين", "الفنانين والمصممين", "موظفي الأرشيف"], "ans": 1}, {"s": 1, "q": "ملف Word الحديث بصيغة docx هو في الحقيقة:", "opts": ["ملف نصي عادي", "صورة مضغوطة", "حزمة مضغوطة تحتوي ملفات XML", "ملف PDF مُعدَّل"], "ans": 2}, {"s": 1, "q": "المعيار الدولي الذي يعتمده ملف docx يُسمى:", "opts": ["HTML", "PDF", "OOXML", "MP3"], "ans": 2}, {"s": 1, "q": "في Word، الـ DOM يعني:", "opts": ["نوع من الخطوط", "نموذج واثق المستند في الذاكرة", "لون الخلفية", "حجم الورقة"], "ans": 1}, {"s": 1, "q": "أصغر وحدة نص في Word تحمل تنسيقاً موحداً تُسمى:", "opts": ["Document", "Section", "Paragraph", "Run"], "ans": 3}, {"s": 1, "q": "النهج الجشع (Greedy) في تقسيم الأسطر يعني:", "opts": ["ملء كل سطر بأكبر عدد ممكن من الكلمات", "ترك الأسطر فارغة", "البدء من آخر الفقرة", "حذف المسافات الزائدة"], "ans": 0}, {"s": 1, "q": "عيب النهج الجشع في تقسيم الأسطر هو:", "opts": ["بطء الأداء", "قد يُنتج فراغات غير متجانسة في نهاية الأسطر", "يستهلك ذاكرة كبيرة", "لا يدعم العربية"], "ans": 1}, {"s": 1, "q": "Kerning في Word يعني التحكم في:", "opts": ["حجم الخط", "لون النص", "المسافة بين الأحرف المتجاورة", "ارتفاع السطر"], "ans": 2}, {"s": 1, "q": "الأنماط (Styles) في Word تُساعد على:", "opts": ["تسريع الطباعة", "ضمان تنسيق موحد في المستند الطويل", "تقليل حجم الملف", "إضافة صور"], "ans": 1}, {"s": 1, "q": "في OLE، الفرق بين الربط (Linking) والتضمين (Embedding) هو:", "opts": ["لا فرق بينهما", "في الربط يُخزَّن مرجع للملف الأصلي وفي التضمين نسخة كاملة", "التضمين أبطأ دائماً", "الربط يزيد حجم الملف"], "ans": 1}, {"s": 1, "q": "لغة البرمجة المستخدمة في وحدات الماكرو بـ Word هي:", "opts": ["Python", "Java", "VBA", "C#"], "ans": 2}, {"s": 1, "q": "نظام Unicode في Word يُستخدم من أجل:", "opts": ["ضغط الملفات", "دعم مختلف لغات العالم والرموز", "تحسين جودة الطباعة", "إدارة الصور"], "ans": 1}, {"s": 1, "q": "برامج النشر المكتبي (DTP) تختلف عن Word في:", "opts": ["أنها أرخص ثمناً", "توفير تحكم أعلى في التخطيط والتصميم الاحترافي", "أنها أسهل استخداماً", "أنها لا تدعم الصور"], "ans": 1}, {"s": 1, "q": "تقنية OLE تُتيح لـ Word أن يعمل كـ:", "opts": ["نظام تشغيل", "بيئة حاوية تدمج محتوى تطبيقات أخرى", "قاعدة بيانات", "برنامج رسم"], "ans": 1}, {"s": 1, "q": "مراحل عرض المستند في Word هي:", "opts": ["الفتح والتعديل والإغلاق", "المعالجة المسبقة، التخطيط، التهيئة الرسومية", "التحميل والحفظ فقط", "الترميز والضغط والعرض"], "ans": 1}, {"s": 1, "q": "ميزة الأنماط (Styles) تعني أنك إذا غيّرت النمط مرة واحدة:", "opts": ["يتغير المستند كله تلقائياً", "يجب تغيير كل عنوان يدوياً", "لا يتغير شيء", "يُحذف النمط القديم"], "ans": 0}, {"s": 1, "q": "الخوارزمية المتقدمة التي يستخدمها Word لتقسيم الأسطر بشكل مثالي تعتمد على:", "opts": ["البحث العشوائي", "الترتيب الأبجدي", "البرمجة الديناميكية", "خوارزمية الفرز"], "ans": 2}, {"s": 1, "q": "نقطة ضعف الماكرو (Macro) في Word هي:", "opts": ["بطء تنفيذها", "قد تستغلها الفيروسات للانتشار", "تزيد حجم الملف كثيراً", "لا تعمل على Windows"], "ans": 1}, {"s": 1, "q": "لكي يعمل التأليف المشترك في Word يجب:", "opts": ["امتلاك نسخة مدفوعة", "حفظ الملف في OneDrive أو SharePoint", "استخدام Windows فقط", "إيقاف الإنترنت"], "ans": 1}, {"s": 1, "q": "دمج المراسلات (Mail Merge) يُستخدم لـ:", "opts": ["دمج ملفات Word في ملف واحد", "إنشاء عدد كبير من المستندات المخصصة آلياً", "إرسال البريد الإلكتروني", "دمج الصور"], "ans": 1}, {"s": 1, "q": "OOXML يعني أن ملف docx أصبح:", "opts": ["ملفاً ثنائياً مغلقاً", "حزمة XML مفتوحة قابلة للمعالجة آلياً", "صورة مضغوطة", "ملف نصي بسيط"], "ans": 1}, {"s": 1, "q": "استخدام نمط العنوان (Heading Style) يُساعد قارئات الشاشة على:", "opts": ["تكبير الخط تلقائياً", "التعرف على هيكل المستند وقراءته بشكل صحيح", "تغيير اللون", "طباعة المستند"], "ans": 1}, {"s": 1, "q": "المستقبل في برامج معالجة النصوص يتجه نحو:", "opts": ["العودة للملفات النصية البسيطة", "دمج الذكاء الاصطناعي والسحابة", "إلغاء واجهات المستخدم الرسومية", "اعتماد لغات برمجة جديدة فقط"], "ans": 1}, {"s": 2, "q": "قاعدة البيانات هي:", "opts": ["برنامج لمعالجة النصوص", "مجموعة منظمة من البيانات يمكن الوصول إليها وإدارتها بسهولة", "جهاز تخزين خارجي", "نوع من الشبكات"], "ans": 1}, {"s": 2, "q": "أيٌّ من الآتي مثال على قاعدة بيانات؟", "opts": ["برنامج Word", "قاعدة بيانات الطلاب في الجامعة", "برنامج الرسام", "جهاز الطابعة"], "ans": 1}, {"s": 2, "q": "البيانات (Data) هي:", "opts": ["ناتج معالجة المعلومات", "حقائق خام غير معالجة مثل اسم طالب أو رقم هوية", "تقارير جاهزة", "قوائم منظمة"], "ans": 1}, {"s": 2, "q": "المعلومات (Information) هي:", "opts": ["أرقام خام غير معالجة", "البيانات قبل التخزين", "ناتج معالجة البيانات مثل معدل الطالب", "نفس البيانات بشكل آخر"], "ans": 2}, {"s": 2, "q": "الجدول (Table) في قاعدة البيانات هو:", "opts": ["العلاقة بين قاعدتين", "العنصر الأساسي الذي تُخزَّن فيه البيانات على شكل صفوف وأعمدة", "نوع من الاستعلامات", "برنامج لإدارة البيانات"], "ans": 1}, {"s": 2, "q": "كل صف في جدول قاعدة البيانات يُسمى:", "opts": ["حقل", "جدول", "سجل", "علاقة"], "ans": 2}, {"s": 2, "q": "كل عمود في جدول قاعدة البيانات يُسمى:", "opts": ["سجل", "حقل", "جدول", "مفتاح"], "ans": 1}, {"s": 2, "q": "سجل الطالب في قاعدة البيانات يحتوي على:", "opts": ["أسماء جميع الطلاب فقط", "اسم + رقم + عمر + قسم الطالب", "عناوين الجداول", "قائمة المواد الدراسية"], "ans": 1}, {"s": 2, "q": "العلاقات (Relationships) في قاعدة البيانات هي:", "opts": ["أنواع البيانات المخزنة", "جداول إضافية فارغة", "الروابط التي تربط الجداول ببعضها", "أسماء الحقول"], "ans": 2}, {"s": 2, "q": "علاقة واحد لواحد (1:1) مثالها:", "opts": ["القسم فيه عديد من الطلبة", "كل طالب له رقم جامعي واحد فقط", "الطالب يدرس عدة مواد", "كل مادة يدرسها عدة طلاب"], "ans": 1}, {"s": 2, "q": "علاقة واحد لعديد (1:M) هي الأكثر:", "opts": ["تعقيداً", "ندرةً", "شيوعاً", "خطأً"], "ans": 2}, {"s": 2, "q": "مثال على علاقة عديد لعديد (M:M):", "opts": ["كل طالب له رقم واحد", "كل قسم له رئيس واحد", "الطالب يدرس عدة مواد وكل مادة يدرسها عدة طلاب", "كل موظف في إدارة واحدة"], "ans": 2}, {"s": 2, "q": "نظام إدارة قواعد البيانات (DBMS) هو:", "opts": ["جهاز تخزين", "البرامج المستخدمة لإنشاء قواعد البيانات وإدارتها", "نوع من الشبكات", "لغة برمجة"], "ans": 1}, {"s": 2, "q": "Microsoft Access يُناسب أكثر:", "opts": ["المؤسسات الكبيرة والبنوك", "الطلاب والمستخدمين الجدد", "الشركات العملاقة", "مزودي الإنترنت"], "ans": 1}, {"s": 2, "q": "Oracle يُستخدم في:", "opts": ["المدارس الابتدائية", "المؤسسات الكبيرة", "الأجهزة المنزلية", "تصميم المواقع"], "ans": 1}, {"s": 2, "q": "MySQL يتميز بأنه:", "opts": ["من إنتاج مايكروسوفت", "مفتوح المصدر", "الأغلى ثمناً", "الأبطأ أداءً"], "ans": 1}, {"s": 2, "q": "الدرجات (بيانات) → حساب المعدل هو مثال على تحويل:", "opts": ["المعلومات إلى بيانات", "البيانات إلى معلومات", "الجداول إلى علاقات", "السجلات إلى حقول"], "ans": 1}, {"s": 2, "q": "رقم الطالب (Student_ID) في المثال التوضيحي يربط بين:", "opts": ["حقلين في نفس الجدول", "جدول الطلاب وجدول الدرجات", "قاعدتين مختلفتين", "سجلين متجاورين"], "ans": 1}, {"s": 2, "q": "من مزايا قواعد البيانات:", "opts": ["تقليل سرعة الاستعلام", "صعوبة التحديث", "تقليل التكرار والحفاظ على البيانات بأمان", "زيادة الازدواجية"], "ans": 2}, {"s": 2, "q": "SQL Server من إنتاج شركة:", "opts": ["Google", "Oracle", "Apple", "Microsoft"], "ans": 3}, {"s": 2, "q": "مشاركة البيانات بين عدة مستخدمين تعني:", "opts": ["نسخ الملفات يدوياً", "إمكانية وصول أكثر من شخص للبيانات في نفس الوقت", "إرسال البريد الإلكتروني", "طباعة تقارير مزدوجة"], "ans": 1}, {"s": 2, "q": "جدول الدرجات في المثال يحتوي على:", "opts": ["اسم الطالب وعمره فقط", "رقم الطالب ودرجة الاختبار الأول والثاني والمعدل", "أسماء المواد فقط", "بيانات الأساتذة"], "ans": 1}, {"s": 2, "q": "هدف قاعدة البيانات الرئيسي هو:", "opts": ["تصميم واجهات المستخدم", "تخزين البيانات وتنظيمها واسترجاعها بسرعة ودقة", "برمجة التطبيقات", "إنشاء مواقع الإنترنت"], "ans": 1}, {"s": 2, "q": "سجل بيانات المريض في المستشفى هو مثال على:", "opts": ["جدول فارغ", "قاعدة بيانات حقيقية", "ملف نصي بسيط", "برنامج حسابات"], "ans": 1}, {"s": 2, "q": "حقل \"العمر\" في جدول الطلاب هو مثال على:", "opts": ["سجل", "جدول", "حقل يمثل نوعاً معيناً من البيانات", "علاقة بين جدولين"], "ans": 2}, {"s": 3, "q": "الشبكة الحاسوبية هي:", "opts": ["جهاز تخزين خارجي", "مجموعة حواسيب مرتبطة لتبادل البيانات والموارد", "برنامج لمعالجة النصوص", "نظام تشغيل"], "ans": 1}, {"s": 3, "q": "من الموارد التي تُشارَك عبر الشبكة:", "opts": ["الكهرباء", "الأثاث المكتبي", "الملفات والطابعات وقواعد البيانات", "الكتب الورقية"], "ans": 2}, {"s": 3, "q": "شبكة LAN تعني:", "opts": ["شبكة واسعة بين دول", "شبكة محلية تغطي مساحة صغيرة", "شبكة مدينة", "شبكة الإنترنت"], "ans": 1}, {"s": 3, "q": "مثال على شبكة LAN:", "opts": ["شبكة الإنترنت العالمية", "شبكة مختبر الحاسوب في الكلية", "شبكة تربط دولتين", "شبكة تغطي مدينة كاملة"], "ans": 1}, {"s": 3, "q": "شبكة WAN تغطي:", "opts": ["مساحة صغيرة كمختبر", "غرفة واحدة فقط", "مناطق جغرافية واسعة وتربط مدناً أو دولاً", "مدينة واحدة فقط"], "ans": 2}, {"s": 3, "q": "شبكة MAN تغطي:", "opts": ["غرفة واحدة", "مدينة كاملة وهي أكبر من LAN وأصغر من WAN", "دولة بأكملها", "القارة"], "ans": 1}, {"s": 3, "q": "في هيكلية النجمة (Star) جميع الأجهزة متصلة بـ:", "opts": ["بعضها مباشرة", "كابل رئيسي واحد", "جهاز مركزي (Switch)", "خادم الإنترنت"], "ans": 2}, {"s": 3, "q": "إذا تعطّل الجهاز المركزي في شبكة النجمة:", "opts": ["تعمل الشبكة بشكل طبيعي", "تتوقف الشبكة بالكامل", "يتحسن الأداء", "ترتفع سرعة النقل"], "ans": 1}, {"s": 3, "q": "ميزة هيكلية الخط (Bus) هي:", "opts": ["أمان عالٍ", "قليلة التكلفة", "سرعة فائقة", "سهولة الإدارة"], "ans": 1}, {"s": 3, "q": "عيب هيكلية الخط (Bus) هو:", "opts": ["غالية التكلفة", "أي خلل في الكابل الرئيسي يؤثر على الجميع", "تحتاج جهازاً مركزياً", "بطيئة دائماً"], "ans": 1}, {"s": 3, "q": "في هيكلية الحلقة (Ring) تنتقل البيانات:", "opts": ["عشوائياً", "في اتجاهين دائماً", "باتجاه واحد غالباً", "عبر جهاز مركزي"], "ans": 2}, {"s": 3, "q": "من فوائد الشبكات في التعليم:", "opts": ["توفير الكهرباء", "طباعة الكتب", "دعم المنصات التعليمية والمحاضرات الإلكترونية", "تصنيع الأجهزة"], "ans": 2}, {"s": 3, "q": "الإدارة المركزية للبيانات في الشبكة تعني:", "opts": ["تعقيد الوصول للبيانات", "حفظ البيانات في خادم مركزي مما يسهل إدارتها وحمايتها", "إبطاء سرعة الشبكة", "زيادة تكلفة الأجهزة"], "ans": 1}, {"s": 3, "q": "من مخاطر الشبكات الحاسوبية:", "opts": ["تحسين سرعة الأداء", "الاختراقات الأمنية وانتقال الفيروسات", "توفير التكاليف", "سهولة مشاركة الملفات"], "ans": 1}, {"s": 3, "q": "خطر الاعتماد الكلي على الشبكة هو:", "opts": ["زيادة الإنتاجية", "ارتفاع التكاليف فقط", "تعطل الشبكة يوقف العمل بالكامل", "صعوبة تركيب الكابلات"], "ans": 2}, {"s": 3, "q": "جدار الحماية (Firewall) يُستخدم لـ:", "opts": ["تسريع الشبكة", "تخزين البيانات احتياطياً", "منع الدخول غير المصرح به", "توزيع الطاقة"], "ans": 2}, {"s": 3, "q": "تحديث الأنظمة باستمرار يُساعد على:", "opts": ["زيادة حجم التخزين", "تحسين مظهر البرنامج فقط", "سد الثغرات الأمنية", "تسريع الطباعة"], "ans": 2}, {"s": 3, "q": "من مخاطر الشبكات: انتهاك الخصوصية يعني:", "opts": ["بطء الاتصال", "تسريب معلومات شخصية", "تعطل الأجهزة", "ارتفاع فاتورة الإنترنت"], "ans": 1}, {"s": 3, "q": "الشبكة الأنسب لربط مكاتب شركة في مدن مختلفة هي:", "opts": ["شبكة LAN فقط", "هيكلية نجمية صغيرة", "شبكة WAN", "لا توجد شبكة مناسبة"], "ans": 2}, {"s": 3, "q": "من فوائد الشبكات: تسهيل الاتصال يعني:", "opts": ["تقليل سرعة الإنترنت", "إمكانية تبادل البريد الإلكتروني ومشاركة الملفات", "تعقيد التوصيل", "زيادة الأجهزة المطلوبة"], "ans": 1}, {"s": 3, "q": "هيكلية الحلقة (Ring) تربط الأجهزة بشكل:", "opts": ["نجمي حول جهاز مركزي", "خطي على كابل واحد", "دائري", "عشوائي"], "ans": 2}, {"s": 3, "q": "شبكة WAN تعتمد على:", "opts": ["كابلات داخلية فقط", "إدارة داخلية من المؤسسة", "مزودي خدمة الإنترنت", "جهاز Switch واحد"], "ans": 2}, {"s": 3, "q": "من فوائد الشبكات: تقليل التكاليف يعني:", "opts": ["شراء أجهزة أكثر", "عدم الحاجة لأجهزة منفصلة لكل مستخدم إذ يمكن مشاركتها", "توظيف عمالة إضافية", "زيادة استهلاك الكهرباء"], "ans": 1}, {"s": 3, "q": "الهيكلية الأسهل في الإدارة والتشخيص هي:", "opts": ["الحلقية (Ring)", "الخطية (Bus)", "النجمية (Star)", "لا فرق بينها"], "ans": 2}, {"s": 3, "q": "من طرق تقليل مخاطر الشبكات:", "opts": ["تعطيل الشبكة تماماً", "استخدام كلمات مرور قوية والنسخ الاحتياطي الدوري", "تقليل عدد الأجهزة إلى جهاز واحد", "إيقاف الإنترنت"], "ans": 1}, {"s": 4, "q": "نموذج CIA في أمن المعلومات يعني:", "opts": ["Control – Integration – Access", "Communication – Internet – Authorization", "Confidentiality – Integrity – Availability", "Cybersecurity – Information – Authentication"], "ans": 2}, {"s": 4, "q": "السرية (Confidentiality) تعني:", "opts": ["التأكد من دقة البيانات", "ضمان عمل النظام بلا توقف", "منع الوصول غير المصرح به للبيانات", "تشفير الشبكة"], "ans": 2}, {"s": 4, "q": "السلامة (Integrity) تعني:", "opts": ["حماية البيانات من الوصول", "التأكد من أن البيانات لم تُعدَّل أو تُتلاعَب بها", "ضمان استمرارية النظام", "تشفير الاتصالات"], "ans": 1}, {"s": 4, "q": "التوافر (Availability) يعني:", "opts": ["سرية البيانات", "دقة البيانات", "حماية النظام من التوقف وضمان الوصول إليه", "تشفير البيانات"], "ans": 2}, {"s": 4, "q": "هجوم DDoS يستهدف:", "opts": ["السرية", "السلامة", "التوافر – بتعطيل الخدمة بإغراق الموقع بطلبات كثيرة", "كلمات المرور"], "ans": 2}, {"s": 4, "q": "الفرق بين Information Security وCyber Security:", "opts": ["لا فرق بينهما", "Information Security لحماية البيانات بشكل عام، وCyber Security لحماية الأنظمة الرقمية", "Cyber Security أقدم مصطلحاً", "Information Security للشبكات فقط"], "ans": 1}, {"s": 4, "q": "التشفير (Encryption) هو:", "opts": ["حذف البيانات", "نسخ البيانات احتياطياً", "تحويل البيانات إلى شكل غير مفهوم دون المفتاح", "ضغط الملفات"], "ans": 2}, {"s": 4, "q": "من أنواع البرمجيات الخبيثة (Malware):", "opts": ["Firewall", "Antivirus", "VPN", "Virus وWorm وTrojan"], "ans": 3}, {"s": 4, "q": "الفيروس (Virus) هو:", "opts": ["برنامج مفيد يسرع الحاسوب", "برنامج خبيث يضر بالأنظمة وينتشر", "أداة لحماية الشبكة", "نوع من التشفير"], "ans": 1}, {"s": 4, "q": "التصيد الإلكتروني (Phishing) يتم عبر:", "opts": ["تشفير البيانات", "إيميل أو موقع مزيف لسرقة معلومات المستخدم", "نسخ الملفات", "هجوم مباشر على الخادم"], "ans": 1}, {"s": 4, "q": "هجوم DDoS يعمل بطريقة:", "opts": ["سرقة كلمات المرور", "تثبيت برامج خبيثة صامتة", "إغراق الموقع أو الخادم بطلبات كثيرة لتعطيله", "التصيد عبر الإيميل"], "ans": 2}, {"s": 4, "q": "المصادقة متعددة العوامل (MFA) تعني:", "opts": ["كلمة مرور طويلة جداً", "تغيير كلمة المرور أسبوعياً", "كلمة مرور + رمز هاتف للتحقق من الهوية", "بصمة الإصبع فقط"], "ans": 2}, {"s": 4, "q": "نظام IDS وظيفته:", "opts": ["تشفير البيانات", "منع الدخول مباشرة", "مراقبة النشاط المشبوه في الشبكة", "إدارة كلمات المرور"], "ans": 2}, {"s": 4, "q": "شبكات Wi-Fi العامة في المقاهي تُعدّ خطرة لأن:", "opts": ["بطيئة جداً", "مكلفة الاستخدام", "لا توفر حماية كافية ويمكن اعتراض البيانات", "لا تدعم الأجهزة الحديثة"], "ans": 2}, {"s": 4, "q": "VPN تُستخدم من أجل:", "opts": ["الإصابة بالفيروسات", "تسريع الشبكة فقط", "تشفير الاتصال وحماية البيانات أثناء الإرسال", "فحص الأجهزة من الفيروسات"], "ans": 2}, {"s": 4, "q": "الهندسة الاجتماعية (Social Engineering) هي:", "opts": ["هجوم يستغل ثغرات البرامج", "استغلال الإنسان عبر الخداع وكسب الثقة بدلاً من اختراق النظام", "نوع من التشفير", "هجوم على قواعد البيانات"], "ans": 1}, {"s": 4, "q": "الهندسة الاجتماعية تُعدّ خطيرة لأنها:", "opts": ["تحتاج أجهزة مكلفة", "تعتمد على خداع البشر مما يجعلها صعبة الاكتشاف", "الأسرع تقنياً", "لا تترك أثراً رقمياً"], "ans": 1}, {"s": 4, "q": "تحديد صلاحيات المستخدمين يُساعد على:", "opts": ["إبطاء العمل", "تعقيد الإجراءات", "تقليل مخاطر الوصول غير المصرح به والتسريب الداخلي", "زيادة التكاليف"], "ans": 2}, {"s": 4, "q": "من أخلاقيات الأمن السيبراني:", "opts": ["اختراق الأنظمة لأغراض تعليمية دون إذن", "مشاركة كلمات المرور مع الزملاء", "استخدام المعرفة للحماية واحترام خصوصية الآخرين والالتزام بالقوانين", "نشر الثغرات على الإنترنت"], "ans": 2}, {"s": 4, "q": "الثغرات الأمنية (Vulnerabilities) هي:", "opts": ["ميزات مفيدة في البرنامج", "نقاط ضعف في النظام يمكن أن يستغلها المهاجمون", "أنواع التشفير", "بروتوكولات الأمان"], "ans": 1}, {"s": 4, "q": "النسخ الاحتياطي الدوري مهم لأنه:", "opts": ["يسرّع الشبكة", "يحسّن واجهة البرنامج", "يضمن استرجاع البيانات عند فقدانها بسبب هجوم أو عطل", "يقلل تكلفة الاشتراك"], "ans": 2}, {"s": 4, "q": "جدار الحماية (Firewall) يعمل على:", "opts": ["تسريع الاتصال", "تشفير الملفات المخزنة", "منع الدخول غير المصرح به بمراقبة حركة البيانات", "إدارة كلمات المرور"], "ans": 2}, {"s": 4, "q": "تدريب المستخدمين على الوعي الأمني يُساعد على:", "opts": ["تحسين مهاراتهم في الرسم", "تقليل أخطاء المستخدم والتعرف على الهجمات والتصدي لها", "تسريع إنجاز المهام اليومية فقط", "تقليل الحاجة لشراء أجهزة"], "ans": 1}, {"s": 4, "q": "حماية المؤسسة أمنياً تشمل:", "opts": ["حماية قواعد البيانات فقط", "تركيب كاميرات المراقبة فقط", "حماية قواعد البيانات وأنظمة الموظفين ووضع سياسات أمنية وتحديد الصلاحيات", "اعتماد نظام تشغيل موحد فقط"], "ans": 2}, {"s": 4, "q": "السياسات الأمنية (Security Policies) في المؤسسات تُوفر:", "opts": ["تعقيداً في إجراءات العمل", "تقليلاً لإنتاجية الموظفين", "إطاراً منظماً لحماية البيانات وتحديد المسؤوليات والاستجابة للحوادث", "زيادة التكاليف فقط"], "ans": 2}];
+const META = [
+  {en:"1. Word Processing — Microsoft Office",ar:"معالجة النصوص — مايكروسوفت أوفيس",rng:"أسئلة 1–25"},
+  {en:"2. Database Fundamentals",ar:"أساسيات قواعد البيانات",rng:"أسئلة 26–50"},
+  {en:"3. Computer Networks",ar:"تصنيف الشبكات الحاسوبية وفوائدها ومخاطرها",rng:"أسئلة 51–75"},
+  {en:"4. Information & Cyber Security",ar:"أمن المعلومات وحماية البيانات والأنظمة",rng:"أسئلة 76–100"},
+];
+let name="",sec=1,ans={},secRes=[];
+
+// canvas
+(()=>{
+  const c=document.getElementById('cvs'),ctx=c.getContext('2d');
+  let W,H,pts=[];
+  const resize=()=>{W=c.width=innerWidth;H=c.height=innerHeight;pts=[];for(let i=0;i<55;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35})};
+  resize();window.addEventListener('resize',resize);
+  const draw=()=>{
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1});
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
+        if(d<120){ctx.strokeStyle=`rgba(0,229,255,${.16*(1-d/120)})`;ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke()}
+      }
+      ctx.fillStyle='rgba(0,229,255,.5)';ctx.beginPath();ctx.arc(pts[i].x,pts[i].y,1.4,0,Math.PI*2);ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  };draw();
+})();
+
+function startExam(){
+  const v=document.getElementById('studentName').value.trim();
+  if(v.split(/\s+/).filter(Boolean).length<3){alert('يرجى إدخال الاسم الثلاثي (3 كلمات)');return;}
+  name=v;
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('examPage').style.display='block';
+  document.getElementById('tbName').textContent=name;
+  renderSec(1);
+}
+
+function renderSec(s){
+  sec=s;
+  const m=META[s-1];
+  document.getElementById('secEn').textContent=m.en;
+  document.getElementById('secAr').textContent=m.ar;
+  document.getElementById('secBadge').textContent=m.rng;
+  document.getElementById('pLbl').textContent='القسم '+s+'/4';
+  document.getElementById('pCnt').textContent='0/25';
+  document.getElementById('pFill').style.width='0%';
+  document.getElementById('btnSub').disabled=true;
+  for(let i=1;i<=4;i++){const d=document.getElementById('d'+i);d.className='sd';if(i<s)d.classList.add('done');else if(i===s)d.classList.add('active')}
+  const qs=QS.filter(q=>q.s===s);
+  const wrap=document.getElementById('qWrap');wrap.innerHTML='';
+  qs.forEach((q,idx)=>{
+    const gi=(s-1)*25+idx;
+    const L=['أ','ب','ج','د'];
+    const card=document.createElement('div');card.className='q-card';card.id='qc'+gi;
+    card.innerHTML=`<div class="q-num">سؤال ${gi+1}</div><div class="q-text">${q.q}</div><div class="opts">${q.opts.map((o,i)=>`<div class="opt" id="o_${gi}_${i}" onclick="pick(${gi},${i})"><span class="opt-c">${L[i]}</span>${o}</div>`).join('')}</div>`;
+    wrap.appendChild(card);
+  });
+}
+
+function pick(gi,oi){
+  const prev=ans[gi];
+  ans[gi]=oi;
+  if(prev!==undefined)document.getElementById('o_'+gi+'_'+prev).classList.remove('selected');
+  document.getElementById('o_'+gi+'_'+oi).classList.add('selected');
+  checkDone();
+}
+
+function checkDone(){
+  const st=(sec-1)*25,en=st+25;
+  let d=0;for(let i=st;i<en;i++)if(ans[i]!==undefined)d++;
+  document.getElementById('pCnt').textContent=d+'/25';
+  document.getElementById('pFill').style.width=(d/25*100)+'%';
+  document.getElementById('btnSub').disabled=(d<25);
+}
+
+function submitSec(){
+  const st=(sec-1)*25;
+  const qs=QS.filter(q=>q.s===sec);
+  let correct=0,wrong=[];
+  qs.forEach((q,idx)=>{
+    const gi=st+idx,ch=ans[gi],ok=(ch===q.ans);
+    if(ok)correct++;
+    else wrong.push({q:q.q,ch:q.opts[ch],ans:q.opts[q.ans]});
+    for(let i=0;i<q.opts.length;i++){
+      const el=document.getElementById('o_'+gi+'_'+i);
+      el.classList.add('dis');
+      if(i===q.ans)el.classList.add('ok');
+      else if(i===ch&&!ok)el.classList.add('bad');
+    }
+  });
+  secRes.push({sec,correct,wrong});
+  showRes(sec,correct,wrong);
+}
+
+function showRes(s,cor,wrong){
+  document.getElementById('examPage').style.display='none';
+  document.getElementById('resPage').style.display='block';
+  document.getElementById('finalPage').style.display='none';
+  window.scrollTo(0,0);
+  const pct=Math.round(cor/25*100);
+  const gr=pct>=90?'ممتاز':pct>=80?'جيد جداً':pct>=70?'جيد':pct>=60?'مقبول':'راسب';
+  const sc=pct>=70?'var(--green)':pct>=50?'var(--gold)':'var(--red)';
+  const isLast=(s===4);
+  let wHtml=wrong.length>0
+    ?`<div class="wrong-title">⚠️ الأسئلة الخاطئة (${wrong.length})</div>`+wrong.map(w=>`<div class="wi"><div class="wi-q">${w.q}</div><div class="wi-tags"><span class="wi-bad">❌ إجابتك: ${w.ch}</span><span class="wi-ok">✅ الصحيحة: ${w.ans}</span></div></div>`).join('')
+    :`<div style="text-align:center;padding:1rem;color:var(--green);font-weight:700;font-size:.95rem">🎉 ممتاز! جميع الإجابات صحيحة</div>`;
+  document.getElementById('resCard').innerHTML=`
+    <div class="res-title">نتيجة القسم ${s} من 4</div>
+    <div class="res-name">الطالب: ${name}</div>
+    <div class="score-ring" style="border:5px solid ${sc};box-shadow:0 0 28px ${sc}33">
+      <div class="score-num" style="color:${sc}">${pct}%</div>
+      <div class="score-lbl">${gr}</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="sv g">${cor}</div><div class="sl">صحيح</div></div>
+      <div class="stat"><div class="sv r">${25-cor}</div><div class="sl">خطأ</div></div>
+      <div class="stat"><div class="sv y">${pct}%</div><div class="sl">النسبة</div></div>
+    </div>
+    <div class="divider"></div>${wHtml}<div class="divider"></div>
+    ${isLast
+      ?`<button class="btn-next btn-gold" onclick="showFinal()">🏆 عرض النتيجة النهائية</button>`
+      :`<button class="btn-next" onclick="nextSec()">▶ انتقل للقسم ${s+1} — ${META[s].ar}</button>`}`;
+}
+
+function nextSec(){
+  document.getElementById('resPage').style.display='none';
+  document.getElementById('examPage').style.display='block';
+  window.scrollTo(0,0);
+  renderSec(sec+1);
+}
+
+function showFinal(){
+  document.getElementById('resPage').style.display='none';
+  document.getElementById('finalPage').style.display='block';
+  window.scrollTo(0,0);
+  const tot=secRes.reduce((a,r)=>a+r.correct,0);
+  const pct=tot;
+  const gr=pct>=90?'ممتاز 🌟':pct>=80?'جيد جداً 💪':pct>=70?'جيد 📚':pct>=60?'مقبول 📖':'راسب — أعد المراجعة 🔁';
+  const gc=pct>=90?'#00ff9d':pct>=80?'#00e5ff':pct>=70?'#ffd700':pct>=60?'#ff9f43':'#ff4757';
+  const msg=pct>=90?'أداء رائع ومتميز!':pct>=70?'أداء جيد مع مجال للتحسين':pct>=50?'مراجعة إضافية مطلوبة':'يرجى إعادة مراجعة المحاضرات';
+  const sdets=secRes.map(r=>{const p=Math.round(r.correct/25*100);const c=p>=70?'var(--green)':p>=50?'var(--gold)':'var(--red)';return`<div class="stat"><div class="sv" style="color:${c}">${p}%</div><div class="sl">القسم ${r.sec}</div></div>`}).join('');
+  let allW=[];secRes.forEach(r=>r.wrong.forEach(w=>allW.push(w)));
+  const wHtml=allW.length>0
+    ?`<div class="wrong-title" style="color:var(--red)">❌ إجمالي الأخطاء (${allW.length} سؤال)</div>`+allW.map(w=>`<div class="wi"><div class="wi-q">${w.q}</div><div class="wi-tags"><span class="wi-bad">❌ ${w.ch}</span><span class="wi-ok">✅ ${w.ans}</span></div></div>`).join('')
+    :`<div style="text-align:center;padding:1.2rem;color:var(--green);font-weight:700;font-size:1rem">🎉 100/100 — أداء مثالي!</div>`;
+  document.getElementById('finalCard').innerHTML=`
+    <div class="final-banner">
+      <div class="final-t">📊 النتيجة النهائية الكاملة</div>
+      <div class="final-score" style="color:${gc}">${tot}<small>/100</small></div>
+      <div class="final-grade" style="color:${gc}">${gr}</div>
+      <div class="final-msg">${msg}</div>
+    </div>
+    <div class="res-name" style="margin-bottom:1rem">الطالب: ${name}</div>
+    <div class="stats" style="margin-bottom:.9rem">
+      <div class="stat"><div class="sv g">${tot}</div><div class="sl">صحيح</div></div>
+      <div class="stat"><div class="sv r">${100-tot}</div><div class="sl">خطأ</div></div>
+      <div class="stat"><div class="sv y">${pct}%</div><div class="sl">الإجمالي</div></div>
+    </div>
+    <div class="stats" style="margin-bottom:1.3rem">${sdets}</div>
+    <div class="divider"></div>${wHtml}
+    <div class="divider"></div>
+    <div style="text-align:center;font-size:.74rem;color:var(--muted);padding:.4rem">إعداد ياسر عمار عبد &nbsp;·&nbsp; كلية التربية &nbsp;·&nbsp; م.م. إيناس سعيد مراد</div>`;
+}
+</script>
+</body>
+</html>
