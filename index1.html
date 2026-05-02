@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اختبار الحاسبات  .م. مد مراد</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --card: #1a2236;
+    --border: #2a3a55;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --correct: #10b981;
+    --wrong: #ef4444;
+    --warn: #f59e0b;
+    --glow: 0 0 20px rgba(0,212,255,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    min-height: 100vh;
+    background-image: 
+      radial-gradient(ellipse at 20% 10%, rgba(0,212,255,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(124,58,237,0.06) 0%, transparent 50%);
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+
+  /* ===== INTRO ===== */
+  #intro-screen {
+    text-align: center;
+    gap: 24px;
+  }
+  .hero-icon {
+    font-size: 64px;
+    animation: pulse 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(0,212,255,0.5));
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+  .hero-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 900;
+    background: linear-gradient(135deg, #00d4ff, #7c3aed, #10b981);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -1px;
+  }
+  .hero-sub {
+    color: var(--text-dim);
+    font-size: 15px;
+    line-height: 1.8;
+  }
+  .hero-sub strong { color: var(--accent); }
+  .stats-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .stat-chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .name-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .name-box label { font-size: 14px; color: var(--text-dim); }
+  .name-box input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+    direction: rtl;
+  }
+  .name-box input:focus { border-color: var(--accent); box-shadow: var(--glow); }
+
+  .btn-start {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 16px 48px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 24px rgba(0,212,255,0.3);
+    letter-spacing: 0.5px;
+  }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,212,255,0.4); }
+
+  /* ===== SECTION SELECT ===== */
+  #section-screen { gap: 24px; }
+  .section-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    width: 100%;
+    max-width: 900px;
+  }
+  .section-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .section-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .section-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .section-card:hover::before { opacity: 0.06; }
+  .section-card .sec-num {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--accent);
+    font-family: 'Tajawal', sans-serif;
+  }
+  .section-card .sec-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 8px 0 4px;
+  }
+  .section-card .sec-count {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .section-card .sec-score {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--accent3);
+    font-weight: 600;
+  }
+  .section-card.done { border-color: var(--accent3); }
+  .section-card.done .sec-num { color: var(--accent3); }
+
+  /* ===== EXAM SCREEN ===== */
+  #exam-screen { 
+    align-items: stretch; 
+    padding: 0;
+    justify-content: flex-start;
+  }
+  .exam-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .exam-header-right { display: flex; align-items: center; gap: 12px; }
+  .sec-badge {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    padding: 4px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .q-counter {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+  .q-counter span { color: var(--text); font-weight: 700; }
+  .progress-bar-wrap {
+    flex: 1;
+    min-width: 120px;
+    max-width: 300px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+  .btn-submit-sec {
+    background: var(--card);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-submit-sec:hover { background: var(--accent); color: var(--bg); }
+
+  .exam-body {
+    flex: 1;
+    padding: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 28px;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .q-num-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+  }
+  .q-text {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.7;
+    margin-bottom: 18px;
+    color: var(--text);
+  }
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .option-btn {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 18px;
+    text-align: right;
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .option-btn:hover:not([disabled]) { border-color: var(--accent); background: rgba(0,212,255,0.05); }
+  .option-btn.selected { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+  .option-btn.correct { border-color: var(--correct); background: rgba(16,185,129,0.1); color: var(--correct); }
+  .option-btn.wrong { border-color: var(--wrong); background: rgba(239,68,68,0.1); color: var(--wrong); }
+  .option-letter {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .correct .option-letter { background: var(--correct); color: white; }
+  .wrong .option-letter { background: var(--wrong); color: white; }
+
+  /* ===== RESULTS ===== */
+  #result-screen { gap: 24px; text-align: center; }
+  .result-circle {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent3) var(--pct, 0%), var(--border) 0%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: rotatein 1s ease;
+  }
+  @keyframes rotatein {
+    from { transform: rotate(-180deg) scale(0.5); opacity: 0; }
+    to { transform: rotate(0) scale(1); opacity: 1; }
+  }
+  .result-circle-inner {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .result-pct { font-size: 28px; font-weight: 900; color: var(--accent3); }
+  .result-pct-label { font-size: 11px; color: var(--text-dim); }
+  .result-title { font-size: 22px; font-weight: 900; }
+  .result-stats {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .result-stat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 24px;
+    min-width: 100px;
+  }
+  .result-stat .val { font-size: 24px; font-weight: 900; }
+  .result-stat .lbl { font-size: 12px; color: var(--text-dim); }
+  .correct-val { color: var(--correct); }
+  .wrong-val { color: var(--wrong); }
+  .result-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .btn-secondary {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 12px;
+    padding: 12px 28px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ===== FINAL RESULTS ===== */
+  #final-screen { gap: 28px; text-align: center; }
+  .trophy { font-size: 72px; animation: bounce 1s ease; }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    40% { transform: translateY(-20px); }
+    60% { transform: translateY(-10px); }
+  }
+  .final-name { font-size: 20px; font-weight: 700; color: var(--accent); }
+  .final-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    width: 100%;
+    max-width: 700px;
+  }
+  .final-sec-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .final-sec-card .fsec-title { font-size: 13px; color: var(--text-dim); margin-bottom: 6px; }
+  .final-sec-card .fsec-score { font-size: 20px; font-weight: 900; color: var(--accent3); }
+  .total-score-box {
+    background: var(--card);
+    border: 2px solid var(--accent);
+    border-radius: 20px;
+    padding: 24px 48px;
+    box-shadow: var(--glow);
+  }
+  .total-score-box .total-lbl { font-size: 14px; color: var(--text-dim); }
+  .total-score-box .total-val {
+    font-size: 48px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div id="intro-screen" class="screen active">
+  <div class="hero-icon">🖥️</div>
+  <div class="hero-title">COMPUTER SCIENCE EXAM</div>
+  <div class="hero-sub">
+    <strong>م.م. إيناس سعيد مراد</strong> · كلية التربية · المرحلة الثانية<br>
+    اختبار شامل لمادة الحاسبات
+  </div>
+  <div class="stats-row">
+    <div class="stat-chip">📚 9 أقسام</div>
+    <div class="stat-chip">❓ 225 سؤال</div>
+    <div class="stat-chip">✔️ اختيار من متعدد</div>
+  </div>
+  <div class="name-box">
+    <label>الاسم الثلاثي</label>
+    <input type="text" id="student-name" placeholder="أدخل اسمك الثلاثي...">
+  </div>
+  <button class="btn-start" onclick="startExam()">▶ ابدأ الاختبار</button>
+  <div style="font-size:12px;color:var(--text-dim)">إعداد: م.م. إيناس سعيد مراد</div>
+</div>
+
+<!-- SECTION SELECT -->
+<div id="section-screen" class="screen">
+  <div style="text-align:center;margin-bottom:8px;">
+    <div style="font-size:22px;font-weight:900;color:var(--accent)">اختر القسم</div>
+    <div style="font-size:13px;color:var(--text-dim);margin-top:4px;" id="student-display"></div>
+  </div>
+  <div class="section-grid" id="section-grid"></div>
+  <button class="btn-secondary" onclick="showFinal()" id="final-btn" style="display:none">🏆 عرض النتيجة النهائية</button>
+</div>
+
+<!-- EXAM -->
+<div id="exam-screen" class="screen">
+  <div class="exam-header">
+    <div class="exam-header-right">
+      <span class="sec-badge" id="sec-badge">القسم 1</span>
+      <span class="q-counter">السؤال <span id="q-current">1</span> / <span id="q-total">25</span></span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <button class="btn-submit-sec" onclick="submitSection()">تسليم القسم ▶</button>
+  </div>
+  <div class="exam-body" id="exam-body"></div>
+</div>
+
+<!-- SECTION RESULT -->
+<div id="result-screen" class="screen">
+  <div class="result-circle" id="result-circle">
+    <div class="result-circle-inner">
+      <div class="result-pct" id="result-pct">0%</div>
+      <div class="result-pct-label">النتيجة</div>
+    </div>
+  </div>
+  <div class="result-title" id="result-title"></div>
+  <div class="result-stats">
+    <div class="result-stat"><div class="val correct-val" id="r-correct">0</div><div class="lbl">✅ صحيح</div></div>
+    <div class="result-stat"><div class="val wrong-val" id="r-wrong">0</div><div class="lbl">❌ خطأ</div></div>
+    <div class="result-stat"><div class="val" id="r-skip" style="color:var(--warn)">0</div><div class="lbl">⏭️ محذوف</div></div>
+  </div>
+  <div class="result-actions">
+    <button class="btn-start" onclick="goToSections()">↩ العودة للأقسام</button>
+    <button class="btn-secondary" onclick="reviewSection()">🔍 مراجعة الإجابات</button>
+  </div>
+</div>
+
+<!-- FINAL -->
+<div id="final-screen" class="screen">
+  <div class="trophy" id="trophy-icon">🏆</div>
+  <div class="final-name" id="final-name"></div>
+  <div style="font-size:15px;color:var(--text-dim)">نتائج جميع الأقسام</div>
+  <div class="final-grid" id="final-grid"></div>
+  <div class="total-score-box">
+    <div class="total-lbl">المجموع الكلي</div>
+    <div class="total-val" id="total-val">0 / 225</div>
+    <div style="font-size:14px;color:var(--text-dim);margin-top:4px;" id="total-grade"></div>
+  </div>
+  <div class="result-actions">
+    <button class="btn-start" onclick="resetAll()">🔄 إعادة الاختبار</button>
+    <button class="btn-secondary" onclick="goToSections()">↩ الأقسام</button>
+  </div>
+</div>
+
+<script>
+// =================== QUESTIONS DATA ===================
+const SECTIONS = [
+  {
+    title: "تكنولوجيا المعلومات والمفاهيم الأساسية",
+    questions: [
+      { q:"ما هو تعريف تكنولوجيا المعلومات (IT)؟", o:["مصطلح يتعلق باستخدام الحواسيب كوسيلة مساعدة لإنشاء وصيانة البيانات","برنامج لتصميم المواقع الإلكترونية فقط","نظام لإدارة الموارد البشرية فقط","جهاز لمعالجة الصوت والصورة فقط"], a:0},
+      { q:"تتصل تكنولوجيا المعلومات بجميع جوانب:", o:["إدارة ومعالجة المعلومات خاصة داخل المؤسسات الكبيرة","تصميم الأثاث المكتبي","إنتاج المواد الغذائية","بناء الطرق والجسور"], a:0},
+      { q:"أي مما يلي يمثل دوراً لتكنولوجيا المعلومات في أعمال المبيعات؟", o:["تحليل الموقع لتحديد أفضل مكان للإنتاج والتوزيع","إنتاج المواد الخام","بناء المصانع","تعيين العمال"], a:0},
+      { q:"ما المقصود بـ 'زيادة الكفاءة' في دور تكنولوجيا المعلومات؟", o:["زيادة كفاءة عمليات الأعمال والاتصالات بين موظفيها","تقليل عدد الموظفين فقط","رفع أسعار المنتجات","تقليل ساعات العمل اليومية"], a:0},
+      { q:"ما المقصود بـ 'العمل بذكاء' في تكنولوجيا المعلومات؟", o:["تغيير طريقة هيكلة وإدارة الأنظمة وعملياتها","العمل لساعات أطول","استخدام أدوات يدوية بدلاً من الرقمية","تقليل استخدام الإنترنت"], a:0},
+      { q:"من منظور تكنولوجيا المعلومات، ما الذي يجب على كل مدير ومحلل معرفته؟", o:["كيفية بناء واستخدام وإدارة الأنظمة الناجحة المعتمدة على IT","كيفية صيانة السيارات","كيفية طبخ الطعام","كيفية بناء المباني"], a:0},
+      { q:"أي مما يلي مثال على استخدام IT في المبيعات والتسويق؟", o:["تحديد أفضل إعلان لتحقيق أعلى إجمالي إيرادات","إنتاج المواد الخام","تصنيع المركبات","بناء المستودعات"], a:0},
+      { q:"ما الهدف من 'تحليل السعر' في تكنولوجيا المعلومات؟", o:["تحديد أسعار المنتجات للحصول على أعلى إجمالي إيرادات","تقليل تكاليف الإنتاج فقط","رفع راتب الموظفين","تخفيض جودة المنتج"], a:0},
+      { q:"ما هو تعريف الحاسوب (Computer)؟", o:["جهاز إلكتروني قابل للبرمجة ومتعدد الاستخدامات يقبل البيانات ويعالجها","جهاز لطباعة الوثائق فقط","جهاز لبث الإذاعة والتلفزيون","جهاز لتخزين الكتب الورقية"], a:0},
+      { q:"ما النظام الذي تعتمد عليه الحواسيب في عملها؟", o:["النظام الثنائي (Binary System) باستخدام الرقمين 0 و 1","النظام العشري فقط","النظام الستيني","النظام الثماني فقط"], a:0},
+      { q:"ما الغرض الأساسي من الحاسوب؟", o:["تسريع حل المشكلات وزيادة الإنتاجية","تشغيل الموسيقى فقط","عرض الأفلام فقط","إجراء المكالمات الهاتفية فقط"], a:0},
+      { q:"تتكون تكنولوجيا الاتصالات من:", o:["أجهزة وأنظمة كهرومغناطيسية للتواصل عبر مسافات طويلة","أجهزة طبخ كهربائية","معدات البناء والتشييد","أدوات الزراعة الحديثة"], a:0},
+      { q:"ما هو نظام المعلومات (IS)؟", o:["نظام يجمع ويعالج ويخزن ويحلل وينشر المعلومات لأغراض محددة","نظام لبناء المنازل فقط","نظام لتوزيع الطعام","نظام لنقل البضائع"], a:0},
+      { q:"ما هي 'مدخلات' نظام المعلومات؟", o:["البيانات والتعليمات","المباني والمنشآت","الأثاث المكتبي","المواد الغذائية"], a:0},
+      { q:"ما الفرق بين IT و IS؟", o:["IT مكوّن محدد كالحاسوب أو الطابعة أو الشبكة، بينما IS يشمل النظام بأكمله","لا فرق بينهما إطلاقاً","IT أكبر وأشمل من IS","IS يختص بالأجهزة فقط دون البرامج"], a:0},
+      { q:"ما تعريف البيانات (Data)؟", o:["حقائق أولية أو أوصاف أساسية للأشياء أو الأحداث غير منظمة لتنقل أي معنى محدد","مجموعة من الحقائق المنظمة ذات معنى للمستلم","تقارير مالية معالجة","نتائج تحليل إحصائي مكتملة"], a:0},
+      { q:"ما تعريف المعلومات (Information)؟", o:["مجموعة من الحقائق (البيانات) المنظمة بطريقة تكون ذات مغزى للمستلم","حقائق أولية خام غير منظمة","أرقام وأحداث غير معالجة","ملفات مخزنة في الحاسوب"], a:0},
+      { q:"أي مما يلي مثال على بيانات؟", o:["متوسطات درجات الطلاب كأرقام خام غير مرتبطة","معدل الطالب بعد حسابه","تقرير الحضور والغياب الأسبوعي","نتائج الامتحانات المعلنة"], a:0},
+      { q:"أي مما يلي يمثل تحويل البيانات إلى معلومات؟", o:["إضافة اسم الطالب إلى متوسط درجاته للحصول على معلومة مفيدة","تخزين الأرقام في قاعدة البيانات دون معالجة","طباعة القوائم كما هي","نسخ الملفات من جهاز لآخر"], a:0},
+      { q:"ما المرحلة الأولى في دورة معالجة البيانات؟", o:["الإدخال (Input) - إدخال البيانات الخام إلى الحاسوب","المعالجة","الإخراج","التخزين"], a:0},
+      { q:"ما الجهاز المسؤول عن معالجة البيانات في الحاسوب؟", o:["وحدة المعالجة المركزية (CPU) والذاكرة الرئيسية","الشاشة","لوحة المفاتيح","الطابعة"], a:0},
+      { q:"أي مما يلي مثال على أجهزة الإخراج (Output)؟", o:["الشاشة والنصوص المطبوعة والصوت والرسوم البيانية","لوحة المفاتيح والفأرة","القرص الصلب والأقراص المرنة","وحدة المعالجة المركزية"], a:0},
+      { q:"ما وسائط التخزين الممغنطة التقليدية؟", o:["الأقراص المرنة والقرص الصلب والشريط الممغناطيسي","الشاشة والطابعة","لوحة المفاتيح والفأرة","مكبرات الصوت والسماعات"], a:0},
+      { q:"ما هو CBIS؟", o:["نظام معلومات معتمد على الحاسوب يستخدم الحاسوب وتكنولوجيا الاتصالات لأداء المهام","جهاز تخزين خارجي","لغة برمجة متقدمة","نوع من الشبكات اللاسلكية"], a:0},
+      { q:"ما عناصر نظام CBIS الستة؟", o:["المكونات المادية، البرمجيات، قواعد البيانات، الشبكة، الإجراءات، الأشخاص","المباني، الأراضي، السيارات، الأجهزة، الموظفون، المديرون","الخوادم، الكابلات، الموجهات، المحولات، البروتوكولات، المستخدمون","الأجهزة، الكهرباء، الماء، الهواء، الحرارة، الضغط"], a:0}
+    ]
+  },
+  {
+    title: "نظام التشغيل Windows",
+    questions: [
+      { q:"ما هو نظام التشغيل (Operating System)؟", o:["البرنامج الرئيسي الذي يدير وينظم جميع موارد الجهاز ويتحمل أولاً عند تشغيل الحاسوب","برنامج لتصميم الجرافيك فقط","نظام لإدارة الرواتب","تطبيق لمشاركة الملفات عبر الإنترنت"], a:0},
+      { q:"بدون نظام التشغيل:", o:["لا يمكن للحاسوب أن ينطلق أو يستجيب لأي أمر","يعمل الحاسوب بشكل أبطأ فقط","يعمل الحاسوب لكنه يظهر خطأً بسيطاً","يعمل الحاسوب بنصف الطاقة فقط"], a:0},
+      { q:"ما وظيفة نظام التشغيل في إدارة الملفات والمجلدات؟", o:["توفير هيكلية منظمة لحفظ واسترجاع وحذف البيانات والمعلومات","تشغيل الألعاب الإلكترونية","طباعة الوثائق تلقائياً","تصفح الإنترنت فقط"], a:0},
+      { q:"كيف ينظم نظام التشغيل الموارد (المعالج والذاكرة)؟", o:["تخصيص وقت المعالج (CPU) ومساحة الذاكرة (RAM) بين البرامج العاملة لضمان عدم تعارضها","يعطي كل الموارد لبرنامج واحد فقط","يقسم الموارد بالتساوي الصارم","لا يقوم بأي إدارة للموارد"], a:0},
+      { q:"ما هي واجهة سطر الأوامر (CLI)؟", o:["واجهة تفاعل بين المستخدم والجهاز تعتمد على كتابة الأوامر النصية","واجهة رسومية تعتمد على النقر بالفأرة","واجهة صوتية تعتمد على التحدث","واجهة تعتمد على اللمس فقط"], a:0},
+      { q:"ما هو نظام Windows؟", o:["نظام تجاري تنتجه شركة Microsoft وهو الأكثر شيوعاً واستخداماً على مستوى العالم","نظام مفتوح المصدر يمكن تعديله","نظام خاص بحواسيب Apple فقط","نظام مخصص للهواتف الذكية فقط"], a:0},
+      { q:"ما مميزات نظام macOS؟", o:["يتميز بتركيزه على التصميم الجرافيكي والإبداع وخاص بحواسيب Apple","يعمل على جميع أجهزة الحاسوب","هو نظام مفتوح المصدر","مخصص للخوادم فقط"], a:0},
+      { q:"أين يُستخدم نظام Linux بشكل رئيسي؟", o:["في الخوادم وأنظمة البحث والتطوير المتقدمة","في الهواتف الذكية فقط","في ألعاب الفيديو المنزلية","في الطابعات فقط"], a:0},
+      { q:"ما الخاصية المميزة لنظام Linux؟", o:["نظام مفتوح المصدر يمكن لأي شخص تعديله وتطويره","نظام مدفوع جداً","مخصص لحواسيب محددة","لا يدعم الاتصال بالإنترنت"], a:0},
+      { q:"ما أنظمة التشغيل المخصصة للهواتف الذكية والأجهزة اللوحية؟", o:["Android وiOS مع تركيزهما على التفاعل باللمس وكفاءة الطاقة","Windows وLinux","macOS وChrome OS","Ubuntu وFedora"], a:0},
+      { q:"ما وظيفة سطح المكتب (Desktop) في Windows؟", o:["النقطة الأساسية التي تعرض عليها الرموز والاختصارات الرئيسية للوصول السريع","شريط أسفل الشاشة يحتوي على الأيقونات","نقطة الوصول لجميع البرامج","مكان لتخزين الملفات المحذوفة"], a:0},
+      { q:"ماذا يحتوي شريط المهام (Taskbar) في Windows؟", o:["زر البدء وأيقونات البرامج المفتوحة ومؤشرات الوقت والتاريخ والإشعارات","ملفات المستخدم ومجلداته","إعدادات النظام فقط","قائمة البرامج المثبتة فقط"], a:0},
+      { q:"ما وظيفة قائمة 'ابدأ' (Start Menu) في Windows؟", o:["النقطة المركزية للوصول إلى جميع البرامج المثبتة وإعدادات النظام وخيارات إيقاف التشغيل","عرض الملفات المحذوفة","إدارة الطابعات فقط","تغيير خلفية الشاشة فقط"], a:0},
+      { q:"ما الغرض من الأيقونات (Icons) في Windows؟", o:["رموز رسومية تمثل الملفات أو المجلدات أو التطبيقات مما يسهل التعرف عليها والتعامل معها","نصوص تعليمية توضيحية","أدوات لقياس أداء الجهاز","إشعارات من الإنترنت"], a:0},
+      { q:"ما الإجراء القياسي لإنشاء مجلد جديد في Windows؟", o:["النقر بزر الفأرة الأيمن على مساحة فارغة ← New ← Folder ← كتابة الاسم","النقر بزر الفأرة الأيسر مرتين ← New","الضغط على Ctrl+F ← New","فتح Control Panel ← New Folder"], a:0},
+      { q:"ما اختصار لوحة المفاتيح لنسخ ملف في Windows؟", o:["Ctrl+C","Ctrl+X","Ctrl+V","Ctrl+Z"], a:0},
+      { q:"ما اختصار لوحة المفاتيح للقص (Cut) في Windows؟", o:["Ctrl+X","Ctrl+C","Ctrl+V","Ctrl+A"], a:0},
+      { q:"ما اختصار لوحة المفاتيح للصق (Paste) في Windows؟", o:["Ctrl+V","Ctrl+C","Ctrl+X","Ctrl+Z"], a:0},
+      { q:"عند حذف ملف في Windows، أين يذهب؟", o:["إلى سلة المحذوفات (Recycle Bin) للسماح باسترجاعه قبل الحذف النهائي","يُحذف نهائياً مباشرة","يُنقل إلى مجلد النسخ الاحتياطي","يُرسل إلى البريد الإلكتروني"], a:0},
+      { q:"كيف يمكن الوصول إلى إعدادات النظام في Windows؟", o:["من قائمة Start ثم Settings","من خلال سطح المكتب مباشرة فقط","من الطابعة فقط","من المتصفح فقط"], a:0},
+      { q:"ما أهمية تفعيل ميزة Windows Update بانتظام؟", o:["ضمان الحصول على أحدث التحديثات الأمنية وإصلاح الأخطاء والحفاظ على استقرار النظام","تسريع الحاسوب فقط","تحسين شكل الواجهة فقط","زيادة سعة التخزين"], a:0},
+      { q:"ما الهدف من النسخ الاحتياطي (Backup)؟", o:["حماية الملفات المهمة من الضياع وتخزين نسخة احتياطية على وسائط خارجية أو التخزين السحابي","تسريع عمل الجهاز","تحسين جودة الصوت","تحديث البرامج المثبتة"], a:0},
+      { q:"ما وظيفة تغيير الإعدادات الإقليمية في Windows؟", o:["تعديل اللغة والتاريخ والوقت والصيغ الرقمية","تغيير لون الشاشة فقط","تحديث برامج الأمان","إضافة برامج جديدة"], a:0},
+      { q:"كيف يمكن إدارة البرامج والتطبيقات في Windows؟", o:["من الإعدادات: إضافة أو إزالة البرامج المثبتة على الجهاز","من سطح المكتب مباشرة فقط","من لوحة المفاتيح فقط","من الطابعة فقط"], a:0},
+      { q:"ما الغرض من إعدادات الشاشة في Windows؟", o:["التحكم في دقة الشاشة (Resolution) والسطوع (Brightness) وإعدادات العرض","تغيير أسماء الملفات","إدارة قواعد البيانات","ضبط سرعة الإنترنت"], a:0}
+    ]
+  },
+  {
+    title: "إدارة الملفات والمجلدات",
+    questions: [
+      { q:"ما تعريف الملف (File) في الحاسوب؟", o:["وحدة تخزين بيانات داخل الحاسوب تحتوي على معلومات محددة مثل نصوص أو صور أو أصوات أو فيديو","مجلد يحتوي على ملفات أخرى","برنامج لتشغيل الفيديو","جهاز تخزين خارجي"], a:0},
+      { q:"ما الامتداد الخاص بملفات Word؟", o:[".docx",".xlsx",".jpg",".mp4"], a:0},
+      { q:"ما الامتداد الخاص بملفات Excel؟", o:[".xlsx",".docx",".pdf",".mp3"], a:0},
+      { q:"ما الامتداد الخاص بالصور؟", o:[".jpg",".docx",".xlsx",".exe"], a:0},
+      { q:"ما الامتداد الخاص بالفيديو؟", o:[".mp4",".docx",".xlsx",".txt"], a:0},
+      { q:"ما تعريف المجلد (Folder) في الحاسوب؟", o:["وعاء أو حاوية تحتوي على مجموعة من الملفات أو المجلدات الفرعية يساعد في تنظيم الملفات بطريقة مرتبة","ملف نصي يحتوي على بيانات مهمة","برنامج لتشغيل الأفلام","جهاز ذاكرة خارجي"], a:0},
+      { q:"ما الكيفية الصحيحة لإعادة تسمية ملف (Rename) في Windows؟", o:["النقر بزر الفأرة الأيمن ← Rename ← كتابة الاسم الجديد","الضغط على Ctrl+R","النقر مرتين بزر الفأرة الأيسر فقط","فتح الملف ← Save As"], a:0},
+      { q:"كيف يتم نقل ملف (Move) في Windows؟", o:["باستخدام السحب والإفلات أو أمر Cut ثم Paste","باستخدام Ctrl+C فقط","بالنقر بزر الفأرة الأيمن مرتين","بفتح الملف وإغلاقه"], a:0},
+      { q:"ما الفرق بين نسخ (Copy) ونقل (Move) الملف؟", o:["النسخ يُنشئ نسخة إضافية مع الإبقاء على الأصل، بينما النقل يزيل الملف من مكانه الأصلي","النسخ والنقل كلاهما يحذف الملف الأصلي","النسخ أبطأ من النقل دائماً","النقل يُنشئ نسخة إضافية أيضاً"], a:0},
+      { q:"كيف يمكن حذف ملف في Windows؟", o:["بتحديد الملف والضغط على مفتاح Delete أو النقر بزر الفأرة الأيمن ← Delete","بالضغط على Ctrl+D فقط","بفتح الملف ثم غلقه","بإرسال الملف بالبريد الإلكتروني"], a:0},
+      { q:"كيف يمكن استرجاع ملف محذوف من سلة المحذوفات؟", o:["فتح Recycle Bin ← النقر بزر الأيمن على الملف ← Restore","فتح الملف من الجهاز مباشرة","استخدام Ctrl+Z فقط","استخدام برامج خاصة فقط"], a:0},
+      { q:"كيف يمكن البحث عن ملف في Windows؟", o:["باستخدام شريط البحث في File Explorer وكتابة اسم الملف أو امتداده","من خلال قاعدة البيانات فقط","بفتح كل مجلد يدوياً","من إعدادات النظام فقط"], a:0},
+      { q:"كيف يمكن عرض جميع ملفات Word في البحث؟", o:["كتابة *.docx في شريط البحث","كتابة Word في شريط البحث","كتابة files في شريط البحث","فتح Microsoft Word أولاً"], a:0},
+      { q:"أين يمكن حفظ نسخة احتياطية (Backup)؟", o:["على USB أو قرص خارجي أو Google Drive أو OneDrive","فقط على نفس الجهاز","فقط على قواعد البيانات","فقط على البريد الإلكتروني"], a:0},
+      { q:"ما الهدف من النسخ الاحتياطي؟", o:["حماية البيانات من الضياع أو التلف","تسريع الجهاز","تحسين جودة الصوت","تقليل استهلاك الطاقة"], a:0},
+      { q:"ما من النصائح الفعالة لإدارة الملفات؟", o:["استخدام أسماء واضحة وسهلة التذكر للملفات والمجلدات","تسمية جميع الملفات برقم فقط","حذف الملفات القديمة دائماً","عدم استخدام المجلدات الفرعية"], a:0},
+      { q:"ما اختصار التراجع (Undo) في Windows؟", o:["Ctrl+Z","Ctrl+X","Ctrl+C","Ctrl+V"], a:0},
+      { q:"ما الهدف من تنظيم الملفات بشكل دوري؟", o:["تجنب الفوضى وتسهيل الوصول إلى الملفات بسرعة","تحديث نظام التشغيل","حماية الجهاز من الفيروسات","تسريع الاتصال بالإنترنت"], a:0},
+      { q:"في النشاط التطبيقي، ماذا يُنشئ الطالب كمجلد رئيسي؟", o:["مجلد باسم 'مشاريع الطلبة' يحتوي على مجلدات فرعية","مجلد باسم 'الحاسوب'","مجلد باسم 'الدروس'","مجلد باسم 'الصور'"], a:0},
+      { q:"ما المجلدات الفرعية التي يُنشئها الطالب داخل المجلد الرئيسي في النشاط التطبيقي؟", o:["مجلد 'التقارير' ومجلد 'العروض التقديمية' مع إدراج ملفات Word وPowerPoint","مجلد 'الصور' ومجلد 'الموسيقى'","مجلد 'الألعاب' ومجلد 'الفيديو'","مجلد 'البرامج' ومجلد 'الأنظمة'"], a:0},
+      { q:"ما البرنامج المستخدم لاستعراض الملفات والمجلدات في Windows؟", o:["File Explorer (مستكشف الملفات)","Microsoft Word","Internet Explorer","Paint"], a:0},
+      { q:"ما الغرض من الامتداد (Extension) في اسم الملف؟", o:["يحدد نوع الملف ويُعرّف البرنامج المرتبط بفتحه","يحدد حجم الملف","يحدد تاريخ إنشاء الملف","يحدد اسم منشئ الملف"], a:0},
+      { q:"ما أفضل نصيحة لتنظيم الملفات الدراسية؟", o:["إنشاء مجلد لكل نوع من الملفات (صور، تقارير، مشاريع...)","تخزين جميع الملفات في مجلد واحد على سطح المكتب","حذف الملفات القديمة فور الانتهاء منها","عدم استخدام المجلدات أصلاً"], a:0},
+      { q:"ما هدف استخدام اختصارات لوحة المفاتيح في إدارة الملفات؟", o:["توفير الوقت وزيادة سرعة التعامل مع الملفات","تحسين شكل الملفات","حماية الملفات من الحذف","فتح الملفات بشكل أسرع فقط"], a:0},
+      { q:"ما التعريف الصحيح للبنية الهرمية للمجلدات؟", o:["تنظيم الملفات داخل مجلدات فرعية داخل مجلدات رئيسية بشكل متشعب ومنظم","تخزين جميع الملفات في مكان واحد","ترتيب الملفات حسب الحجم تلقائياً","حذف الملفات المكررة تلقائياً"], a:0}
+    ]
+  },
+  {
+    title: "معالجة النصوص - Microsoft Word",
+    questions: [
+      { q:"ما الفرق الجوهري بين محرر النصوص (Text Editor) ومعالج النصوص (Word Processor)؟", o:["محرر النصوص للنصوص العادية دون تنسيق، بينما معالج النصوص يتيح تنسيقاً شاملاً كالخطوط والألوان والجداول","لا فرق بينهما","محرر النصوص أحدث وأقوى","معالج النصوص يستخدم لكتابة الكود البرمجي فقط"], a:0},
+      { q:"ماذا يعني مفهوم WYSIWYG؟", o:["ما تراه هو ما تحصل عليه - يضمن أن العرض المرئي أثناء التحرير يتطابق مع الشكل النهائي","نظام لحفظ الملفات التلقائي","طريقة لتشفير البيانات","بروتوكول لنقل الملفات عبر الشبكة"], a:0},
+      { q:"متى بدأ مفهوم WYSIWYG في التطور؟", o:["خلال الثمانينيات","خلال السبعينيات","في عام 2000","خلال الخمسينيات"], a:0},
+      { q:"ما البرنامج الذي يُعدّ المعيار الفعلي لإنشاء المستندات الرقمية حول العالم؟", o:["Microsoft Word","Notepad","Paint","Calculator"], a:0},
+      { q:"ما تنسيق ملف Word الحديث؟", o:[".docx",".doc",".txt",".pdf"], a:0},
+      { q:"ما الذي يمثله نموذج كائن المستند (DOM) في Word؟", o:["تمثيل برمجي وهيكلي للمستند منظم في شكل شجرة هرمية في الذاكرة","نوع من الفيروسات الإلكترونية","لغة برمجة جديدة","نظام لتشفير الملفات"], a:0},
+      { q:"ما معيار OOXML؟", o:["معيار لغة ترميز المكتب المفتوح المعتمد من ISO/IEC 29500 الذي تحول من الصيغة الثنائية القديمة","معيار لتصميم الشبكات","بروتوكول للاتصالات اللاسلكية","نظام لإدارة قواعد البيانات"], a:0},
+      { q:"ما الذي يحتويه ملف .docx في جوهره؟", o:["حزمة مضغوطة (ZIP) تحتوي على مجموعة من ملفات XML وأجزاء أخرى","ملف نصي بسيط مشفر","صورة رقمية للمستند","ملف صوتي مرفق بالنص"], a:0},
+      { q:"ما وظيفة الأنماط (Styles) في Word؟", o:["آلية هيكلية تعمل كآلية توريث للتنسيق تضمن الاتساق في المستندات الطويلة","أداة لتلوين النصوص فقط","طريقة لضغط الملفات","نظام للبحث والاستبدال"], a:0},
+      { q:"ما ميزة خوارزمية Knuth-Plass في Word؟", o:["تُحل مشكلة كسر السطر كمسألة تحسين عالمي بدلاً من النهج الجشع البسيط","تُستخدم لتشفير الملفات فقط","تُسرّع عملية الطباعة فقط","تُدير الذاكرة في الجهاز"], a:0},
+      { q:"ما المشكلة التي تحلها خوارزمية كسر السطر (Line-Breaking)؟", o:["تحديد موضع نهاية كل سطر بحيث يتم استيعاب أكبر عدد ممكن من الكلمات مع تحقيق أفضل مظهر جمالي للفقرة","تحديد حجم الخط تلقائياً","تصحيح الأخطاء الإملائية","ترتيب الصور داخل المستند"], a:0},
+      { q:"ما التقنية OLE في Word؟", o:["تقنية ربط وتضمين الكائنات من تطبيقات مختلفة تسمح بدمج المحتوى من تطبيقات Office الأخرى","أداة لتصحيح الأخطاء النحوية","نظام لضغط ملفات الصور","بروتوكول للاتصال بالإنترنت"], a:0},
+      { q:"ما الفرق بين الربط (Linking) والتضمين (Embedding) في Word؟", o:["الربط يُخزن مرجعاً للملف المصدر ويتحدث تلقائياً، بينما التضمين يُخزن نسخة كاملة داخل المستند","لا فرق بينهما عملياً","الربط يُكبّر حجم الملف أكثر","التضمين يسمح بالتحديث التلقائي"], a:0},
+      { q:"ما لغة البرمجة المستخدمة لأتمتة المهام في Word؟", o:["VBA (Visual Basic for Applications)","Python","Java","C++"], a:0},
+      { q:"ما وحدات الماكرو (Macros) في Word؟", o:["وصول كامل لنموذج كائن المستند Word Object Model للتلاعب بأي عنصر أو خاصية داخل المستند","ملفات مضغوطة","أدوات لتصحيح الأخطاء الإملائية","أنماط تنسيق مسبقة"], a:0},
+      { q:"ما التأليف المشترك (Co-Authoring) في Word؟", o:["قدرة عدة مستخدمين على فتح وتحرير نفس المستند في الوقت ذاته دون تعارض","إرسال المستند بالبريد الإلكتروني","مقارنة نسختين من المستند","طباعة المستند من أجهزة متعددة"], a:0},
+      { q:"لتمكين التأليف المشترك في Word، يجب تخزين الملفات في:", o:["بيئات سحابية مُدارة مثل OneDrive أو SharePoint","على القرص الصلب المحلي فقط","على الخادم الداخلي للشبكة المحلية فقط","على قرص USB فقط"], a:0},
+      { q:"ما دمج المراسلات (Mail Merge) في Word؟", o:["تطبيق خوارزمي لإنشاء مجموعة كبيرة من المستندات المُخصصة والفردية مثل رسائل البريد الجماعي والشهادات","نظام لإرسال البريد الإلكتروني العادي","أداة لمقارنة المستندات","ميزة لتصحيح الأخطاء النحوية"], a:0},
+      { q:"ما المكونات الثلاثة الرئيسية لدمج المراسلات؟", o:["المستند الرئيسي ومصدر البيانات وخوارزمية التكرار والتوليد","الخادم والعميل والشبكة","المدخلات والمعالجة والمخرجات","الجهاز والبرنامج والمستخدم"], a:0},
+      { q:"ما نظام إدارة المراجع والاستشهادات في Word؟", o:["نظام متكامل لإدارة المراجع والاستشهادات يدعم أنظمة التوثيق القياسية مثل APA وMLA","نظام لبحث عبر الإنترنت","أداة لتصميم الجداول","ميزة للترجمة الآلية"], a:0},
+      { q:"كيف يتم تطبيق هيكلة المستندات الطويلة في Word؟", o:["باستخدام أنماط العناوين (Heading Styles) لتحديد مستويات العناوين الهرمية مما يُمكّن من توليد جدول المحتويات تلقائياً","بكتابة العناوين بخط كبير يدوياً فقط","بإضافة صفحة فهرس يدوياً","باستخدام الألوان فقط"], a:0},
+      { q:"ما الترميز الذي يعتمد عليه Word لمعالجة النصوص متعددة اللغات؟", o:["Unicode - يونيكود - لضمان دعم شامل لمختلف اللغات والرموز العالمية","ASCII فقط","ISO-8859 فقط","UTF-7 فقط"], a:0},
+      { q:"ما التطور المستقبلي المتوقع في هندسة معالجة النصوص؟", o:["دمج أدوات الذكاء الاصطناعي التوليدي مثل Copilot لتوليد محتوى النصوص واقتراح التحسينات الهيكلية","إزالة الميزات المتقدمة من Word","إلغاء دعم اللغات المتعددة","الانتقال إلى الطباعة الورقية فقط"], a:0},
+      { q:"ما وظيفة التقارب (Tracking) في تنسيق الطباعة في Word؟", o:["ضبط المسافة بشكل موحد بين جميع الأحرف في كلمة أو قطعة نصية محددة","ضبط المسافة بين سطرين","تغيير حجم الخط تلقائياً","تعديل لون الخلفية"], a:0},
+      { q:"ما وظيفة التقارب بين الأحرف (Kerning) في Word؟", o:["ضبط المسافة الأفقية بين أزواج محددة من الأحرف مثل 'Va' لتحسين التناسق البصري","ضبط حجم الخط الكلي","تغيير لون النص","إضافة نقاط تحت الأحرف"], a:0}
+    ]
+  },
+  {
+    title: "قواعد البيانات",
+    questions: [
+      { q:"ما تعريف قاعدة البيانات (Database)؟", o:["مجموعة منظمة من البيانات يتم تخزينها بطريقة تُمكّن المستخدم من الوصول إليها وإدارتها وتحديثها بسهولة وأمان","برنامج لمعالجة النصوص","جهاز لعرض الصور","شبكة اتصال لاسلكية"], a:0},
+      { q:"أي مما يلي مثال على قاعدة بيانات؟", o:["قاعدة بيانات الطلاب في الجامعة","برنامج معالجة النصوص","نظام التشغيل Windows","تطبيق الرسم والتصميم"], a:0},
+      { q:"ما الفرق بين البيانات والمعلومات في سياق قواعد البيانات؟", o:["البيانات حقائق خام غير مُعالجة مثل اسم طالب ورقم هوية، والمعلومات ناتج معالجة البيانات مثل معدل الطالب","لا فرق بينهما","المعلومات حقائق خام والبيانات ناتج معالجة","البيانات أكثر قيمة دائماً"], a:0},
+      { q:"ما هو العنصر الأساسي لتخزين البيانات في قاعدة البيانات؟", o:["الجداول (Tables) حيث تُخزّن البيانات على شكل صفوف وأعمدة","الملفات النصية المضغوطة","الصور الرقمية","الملفات الصوتية"], a:0},
+      { q:"ما تعريف السجل (Record) في قاعدة البيانات؟", o:["كل صف في الجدول يُمثّل معلومة كاملة عن عنصر واحد مثل سجل طالب (اسم-رقم-عمر-قسم)","كل عمود في الجدول","العلاقة بين جدولين","اسم قاعدة البيانات"], a:0},
+      { q:"ما تعريف الحقل (Field) في قاعدة البيانات؟", o:["كل عمود في الجدول يُمثّل نوعاً معيناً من البيانات مثل حقل الاسم وحقل العمر وحقل الدرجة","كل صف في الجدول","العلاقة بين الجداول","مجموعة الجداول كلها"], a:0},
+      { q:"ما تعريف العلاقات (Relationships) في قاعدة البيانات؟", o:["الروابط التي تربط بين الجداول المختلفة داخل قاعدة البيانات","أسماء الجداول المختلفة","أعمدة الجداول","صفوف البيانات"], a:0},
+      { q:"ما علاقة واحد لواحد (1:1)؟", o:["كل عنصر في الجدول الأول يرتبط بعنصر واحد فقط في الجدول الثاني، مثل كل طالب له رقم جامعي واحد","كل طالب له عدة أرقام جامعية","كل رقم يخص عدة طلاب","لا توجد علاقة بين الجداول"], a:0},
+      { q:"ما علاقة واحد لعديد (1:M)؟", o:["عنصر واحد في الجدول الأول يرتبط بعديد من العناصر في الجدول الثاني، مثل القسم الواحد فيه عديد من الطلبة","كل طالب له قسم واحد فقط","كل مادة لها طالب واحد","كل مجموعة لها مدرس واحد"], a:0},
+      { q:"ما علاقة عديد لعديد (M:M)؟", o:["عناصر متعددة في الجدول الأول ترتبط بعناصر متعددة في الجدول الثاني، مثل الطالب يدرس عدة مواد وكل مادة يدرسها عدة طلاب","طالب واحد ومادة واحدة فقط","مادة واحدة لطالب واحد","لا توجد علاقة بين الطلاب والمواد"], a:0},
+      { q:"أي من مزايا قواعد البيانات يقلل التكرار؟", o:["تقليل التكرار والازدواجية في تخزين البيانات","زيادة حجم الملفات","تعقيد عملية البحث","إبطاء عملية الاستعلام"], a:0},
+      { q:"ما نظام إدارة قواعد البيانات (DBMS)؟", o:["البرامج المستخدمة لإنشاء وإدارة قواعد البيانات","أجهزة التخزين الخارجية","أجهزة الطباعة","معدات الشبكات"], a:0},
+      { q:"أي من برامج DBMS الأكثر سهولة للطلاب المبتدئين؟", o:["Microsoft Access","Oracle","SQL Server","PostgreSQL"], a:0},
+      { q:"ما مميزات قاعدة البيانات MySQL؟", o:["مفتوح المصدر وشائع الاستخدام في تطوير المواقع","مدفوع ومعقد للغاية","خاص بشركة Microsoft","يعمل على أجهزة Apple فقط"], a:0},
+      { q:"أي برنامج DBMS يُستخدم عادةً في المؤسسات الكبيرة؟", o:["Oracle","Microsoft Access","Notepad","Paint"], a:0},
+      { q:"في مثال قاعدة بيانات الطلاب، ما الذي يربط جدول الطلاب بجدول الدرجات؟", o:["رقم الطالب (Student_ID) يربط الجدولين معاً","اسم الطالب","قسم الطالب","درجة الامتحان"], a:0},
+      { q:"ما ميزة مشاركة البيانات في قواعد البيانات؟", o:["إمكانية مشاركة البيانات بين عدة مستخدمين في نفس الوقت","تقييد الوصول لمستخدم واحد فقط","تخزين البيانات بشكل مشفر فقط","عدم السماح بتعديل البيانات"], a:0},
+      { q:"ما ميزة الأمان في قواعد البيانات؟", o:["الحفاظ على البيانات بأمان وتحديدها وحمايتها من الوصول غير المصرح","مشاركة البيانات مع الجميع بدون قيود","حذف البيانات القديمة تلقائياً","نسخ البيانات إلى الطابعة"], a:0},
+      { q:"ما مثال على تحويل البيانات إلى معلومات في سياق قاعدة البيانات؟", o:["الدرجات (بيانات) → حساب المعدل (معلومات)","الاسم (بيانات) → الاسم (معلومات)","الرقم (بيانات) → الرقم (معلومات)","القسم (بيانات) → القسم (معلومات)"], a:0},
+      { q:"ما الجدولان الموجودان في مثال قاعدة بيانات الطلاب؟", o:["جدول الطلاب (Students) وجدول الدرجات (Grades)","جدول الأساتذة وجدول المساقات","جدول المستخدمين وجدول الكلمات السرية","جدول المواد وجدول الامتحانات"], a:0},
+      { q:"ما حقول جدول الطلاب في المثال؟", o:["رقم الطالب والاسم والقسم والمرحلة","الاسم والعنوان ورقم الهاتف فقط","الدرجات والمعدلات فقط","التاريخ والوقت فقط"], a:0},
+      { q:"ما حقول جدول الدرجات في المثال؟", o:["رقم الطالب ودرجة الاختبار الأول ودرجة الاختبار الثاني والمعدل","الاسم والعنوان فقط","القسم والمرحلة فقط","تاريخ الميلاد والجنسية فقط"], a:0},
+      { q:"ما ميزة السرعة والدقة في قواعد البيانات؟", o:["السرعة والدقة في الاستعلام عن المعلومات","إبطاء عمليات البحث لضمان الدقة","تقليل كمية البيانات المخزنة","منع المستخدمين من البحث"], a:0},
+      { q:"لماذا تعتمد الجامعات والمصارف والدوائر الحكومية على قواعد البيانات؟", o:["لتخزين البيانات وتنظيمها واسترجاعها بسرعة ودقة","لتصميم المواقع الإلكترونية فقط","لإرسال البريد الإلكتروني","لطباعة التقارير يدوياً"], a:0},
+      { q:"ما ميزة تحديث البيانات بسهولة في قواعد البيانات؟", o:["إمكانية تحديث البيانات بسهولة دون التأثير على بنية القاعدة","حذف القاعدة وإعادة إنشائها لكل تحديث","تحديث البيانات في ملفات نصية منفصلة","استخدام ورق وقلم لتحديث السجلات"], a:0}
+    ]
+  },
+  {
+    title: "تصنيف الشبكات الحاسوبية وفوائدها",
+    questions: [
+      { q:"ما تعريف الشبكة الحاسوبية؟", o:["مجموعة من الحواسيب والأجهزة المرتبطة معاً بهدف تبادل البيانات والموارد عبر وسيلة اتصال","جهاز حاسوب واحد متطور","برنامج لمعالجة الصور","نظام لطباعة المستندات"], a:0},
+      { q:"ما الموارد التي يمكن مشاركتها في الشبكة الحاسوبية؟", o:["الملفات والطابعات والاتصال بالإنترنت وقواعد البيانات","الكهرباء والماء فقط","الأثاث المكتبي","المواد الغذائية"], a:0},
+      { q:"ما شبكة LAN (الشبكة المحلية)؟", o:["تغطي مساحة صغيرة مثل مدرسة أو مختبر أو مؤسسة وتتميز بسرعة عالية وتكلفة منخفضة نسبياً","تربط بين مدن أو دول","تغطي مدينة كاملة","تعتمد على مزودي خدمة الإنترنت"], a:0},
+      { q:"ما مثال على شبكة LAN؟", o:["شبكة مختبر الحاسوب في الكلية","شبكة الإنترنت العالمية","شبكة تربط بين دولتين","شبكة تغطي مدينة بغداد كاملة"], a:0},
+      { q:"ما شبكة WAN (الشبكة الواسعة)؟", o:["تغطي مناطق جغرافية واسعة وتربط بين مدن أو دول وتعتمد على مزودي خدمة الإنترنت","تغطي غرفة واحدة فقط","تغطي مبنى واحد فقط","تغطي حرم جامعي فقط"], a:0},
+      { q:"ما مثال على شبكة WAN؟", o:["شبكة الإنترنت العالمية","شبكة مختبر الحاسوب","شبكة مبنى سكني","شبكة مكتب صغير"], a:0},
+      { q:"ما شبكة MAN (الشبكة الحضرية)؟", o:["تغطي مدينة كاملة وهي أكبر من LAN وأصغر من WAN","تغطي دولة كاملة","تغطي غرفة واحدة","تغطي قارة بأكملها"], a:0},
+      { q:"ما التوبولوجيا النجمية (Star Topology)؟", o:["جميع الأجهزة متصلة بجهاز مركزي (Switch) وهي سهلة الإدارة لكن تعطل الجهاز المركزي يوقف الشبكة","الأجهزة متصلة في دائرة","الأجهزة على كابل رئيسي واحد","كل جهاز متصل بالآخر مباشرة"], a:0},
+      { q:"ما عيب التوبولوجيا النجمية؟", o:["تعطل الجهاز المركزي يؤدي لتوقف الشبكة بأكملها","تكلفتها مرتفعة جداً","لا يمكن توسيعها","بطيئة جداً"], a:0},
+      { q:"ما التوبولوجيا الخطية (Bus Topology)؟", o:["جميع الأجهزة على كابل رئيسي واحد وهي قليلة التكلفة لكن أي خلل في الكابل يؤثر على الجميع","جميع الأجهزة متصلة بجهاز مركزي","الأجهزة متصلة في دائرة","كل جهاز متصل بجهازين آخرين"], a:0},
+      { q:"ما عيب التوبولوجيا الخطية؟", o:["أي خلل في الكابل الرئيسي يؤثر على جميع الأجهزة","تكلفتها مرتفعة جداً","يصعب توصيل الأجهزة بها","بطيئة جداً"], a:0},
+      { q:"ما التوبولوجيا الحلقية (Ring Topology)؟", o:["الأجهزة متصلة بشكل دائرة وانتقال البيانات يكون باتجاه واحد غالباً","الأجهزة متصلة بجهاز مركزي","الأجهزة على كابل واحد","الأجهزة متصلة بشكل عشوائي"], a:0},
+      { q:"ما أهمية مشاركة الموارد في الشبكات؟", o:["مشاركة الطابعات وقواعد البيانات دون الحاجة لجهاز منفصل لكل مستخدم مما يقلل التكاليف","زيادة تكاليف الصيانة","تعقيد عملية الطباعة","تقليل سرعة الإنترنت"], a:0},
+      { q:"كيف تدعم الشبكات الحاسوبية التعليم الإلكتروني؟", o:["عبر المنصات التعليمية والمحاضرات الإلكترونية والوصول إلى المكتبات الرقمية","عن طريق طباعة الكتب الورقية","من خلال توزيع الأقراص المدمجة","باستخدام السبورة التقليدية فقط"], a:0},
+      { q:"ما خطر الاختراقات الأمنية في الشبكات؟", o:["الوصول غير المصرح به للبيانات السرية والخاصة","تسريع عمل الشبكة","تقليل تكاليف التشغيل","تحسين أداء الجهاز"], a:0},
+      { q:"كيف تنتقل الفيروسات والبرمجيات الخبيثة في الشبكات؟", o:["تنتقل بسرعة بين الأجهزة المتصلة في الشبكة","تبقى محصورة في جهاز واحد فقط","تنتقل فقط عبر البريد الإلكتروني","لا تستطيع الانتقال عبر الشبكات"], a:0},
+      { q:"ما خطر انتهاك الخصوصية في الشبكات؟", o:["تسريب معلومات شخصية وسرية للمستخدمين","تسريع نقل البيانات","تحسين أمان الشبكة","زيادة سرعة الاتصال"], a:0},
+      { q:"ما خطر الاعتماد الكلي على الشبكة؟", o:["تعطل الشبكة يؤدي لتوقف العمل بالكامل مما يُضعف الإنتاجية","تحسين أداء الشبكة","زيادة سرعة البيانات","تقليل تكاليف الصيانة"], a:0},
+      { q:"ما دور جدار الحماية (Firewall) في أمان الشبكة؟", o:["يمنع الوصول غير المصرح به للشبكة من خلال مراقبة وتصفية حركة البيانات","يزيد سرعة الإنترنت","يحفظ نسخاً احتياطية تلقائياً","يُدير الملفات والمجلدات"], a:0},
+      { q:"لماذا يُعدّ تحديث الأنظمة بانتظام مهماً لأمان الشبكة؟", o:["لإصلاح الثغرات الأمنية وحماية الشبكة من الهجمات الجديدة","لتسريع الجهاز فقط","لتحسين شكل الواجهة","لزيادة سعة التخزين"], a:0},
+      { q:"ما دور النسخ الاحتياطي الدوري في حماية الشبكة؟", o:["الحماية من فقدان البيانات في حالة الهجمات الإلكترونية أو الأعطال","تسريع الشبكة","تقليل استهلاك الطاقة","تحسين جودة الصور"], a:0},
+      { q:"ما أهمية تدريب المستخدمين على الوعي الأمني؟", o:["تقليل مخاطر الهجمات الاجتماعية والتصيد الاحتيالي التي تستغل الخطأ البشري","زيادة سرعة الطباعة","تحسين جودة الصوت","تقليل وقت تحميل الصفحات"], a:0},
+      { q:"ما ميزة الإدارة المركزية للبيانات في الشبكات؟", o:["حفظ البيانات في خادم مركزي يسهل إدارتها ونسخها احتياطياً والتحكم في الوصول إليها","توزيع البيانات على جميع الأجهزة بالتساوي","حذف البيانات القديمة تلقائياً","طباعة البيانات تلقائياً"], a:0},
+      { q:"ما دور كلمات المرور القوية في أمان الشبكة؟", o:["منع الوصول غير المصرح به للحسابات والأجهزة والبيانات","تسريع عملية تسجيل الدخول","تحسين شكل الشاشة","زيادة سعة التخزين"], a:0}
+    ]
+  },
+  {
+    title: "أمن المعلومات والأمن السيبراني",
+    questions: [
+      { q:"ما تعريف أمن المعلومات؟", o:["لا يقتصر على كلمة مرور بل يشمل حماية الأجهزة والشبكات والبرمجيات وسلوك المستخدم","وضع كلمة مرور قوية فقط","تشفير الملفات فقط","تثبيت برنامج مكافحة الفيروسات فقط"], a:0},
+      { q:"ما الفرق بين Information Security وCyber Security؟", o:["Information Security يحمي البيانات بشكل عام، بينما Cyber Security يحمي الأنظمة الرقمية تحديداً","لا فرق بينهما","Cyber Security أقدم من Information Security","Information Security يختص بالشبكات فقط"], a:0},
+      { q:"ما نموذج CIA في أمن المعلومات؟", o:["ثلاثة محاور: السرية (Confidentiality) والسلامة (Integrity) والتوافر (Availability)","منظمة استخباراتية أمريكية","بروتوكول تشفير حديث","نوع من جدران الحماية"], a:0},
+      { q:"ما السرية (Confidentiality) في نموذج CIA؟", o:["ضمان أن المعلومات لا تُكشف للأشخاص غير المصرح لهم باستخدام التشفير وكلمات المرور","ضمان أن البيانات لم تُعدّل","ضمان توفر النظام دائماً","ضمان سرعة الشبكة"], a:0},
+      { q:"ما السلامة (Integrity) في نموذج CIA؟", o:["التأكد من أن البيانات لم يتم تعديلها باستخدام دوال Hash","ضمان سرية البيانات","ضمان توفر النظام","ضمان سرعة المعالجة"], a:0},
+      { q:"ما التوافر (Availability) في نموذج CIA؟", o:["حماية النظام من التوقف مثل هجمات تعطيل الخدمة DDoS","حماية البيانات من التعديل","حماية البيانات من الكشف","حماية الشبكة من الاختراق"], a:0},
+      { q:"ما هجوم DDoS؟", o:["هجوم تعطيل الخدمة الموزع يعمل عن طريق إغراق الموقع أو النظام بطلبات كثيرة مما يوقفه","فيروس ينتقل عبر البريد الإلكتروني","برنامج لسرقة كلمات المرور","هجوم يُعدّل بيانات قاعدة البيانات"], a:0},
+      { q:"ما الفيروس (Virus) في أمن المعلومات؟", o:["برنامج خبيث يُلحق نفسه ببرامج أخرى وينتشر عند تشغيل تلك البرامج","برنامج لحماية الأجهزة","أداة لتسريع الشبكة","نوع من قواعد البيانات"], a:0},
+      { q:"ما الدودة (Worm) في البرمجيات الخبيثة؟", o:["برنامج خبيث يتكاثر وينتشر عبر الشبكة دون الحاجة لتدخل المستخدم","برنامج لتصميم الجرافيك","أداة لتنظيم الملفات","برنامج لضغط الملفات"], a:0},
+      { q:"ما حصان طروادة (Trojan) في البرمجيات الخبيثة؟", o:["برنامج خبيث يُخفي نفسه داخل برنامج شرعي يبدو مفيداً ثم يُنفّذ أفعالاً ضارة","فيروس ينتشر عبر الشبكة تلقائياً","برنامج لحماية الجهاز من الاختراق","أداة لتشفير الملفات"], a:0},
+      { q:"ما هجوم التصيد الاحتيالي (Phishing)؟", o:["يكون عبر إيميل أو مواقع مزيفة لخداع المستخدمين وسرقة بيانات الدخول أو المعلومات الحساسة","اختراق مباشر للجهاز","تعطيل الخدمة بإغراق الشبكة","تعديل بيانات قاعدة البيانات"], a:0},
+      { q:"ما الثغرات الأمنية (Vulnerabilities)؟", o:["نقاط ضعف في النظام أو البرمجيات يمكن للمهاجمين استغلالها للوصول غير المصرح به","نقاط قوة في النظام","أدوات لتحسين أداء الجهاز","بروتوكولات اتصال محمية"], a:0},
+      { q:"ما التشفير (Encryption) كتقنية حماية؟", o:["تحويل البيانات إلى شكل غير مفهوم يُجعل قراءتها مستحيلة بدون مفتاح التشفير","ضغط الملفات لتقليل حجمها","نسخ الملفات احتياطياً","حذف الملفات المؤقتة"], a:0},
+      { q:"ما الجدران النارية (Firewall) كتقنية حماية متقدمة؟", o:["تمنع الدخول غير المصرح به عن طريق مراقبة وتصفية حركة البيانات الواردة والصادرة","تُشفّر البيانات فقط","تُسرّع الاتصال بالإنترنت","تُدير كلمات المرور"], a:0},
+      { q:"ما أنظمة كشف التسلل (IDS)؟", o:["تراقب النشاط المشبوه في الشبكة وتُنبّه عند اكتشاف أنماط تدل على هجوم","تُشفّر البيانات فقط","تُدير كلمات المرور","تُسرّع الشبكة"], a:0},
+      { q:"ما المصادقة متعددة العوامل (MFA)؟", o:["استخدام أكثر من طريقة للتحقق مثل كلمة مرور ورمز هاتف معاً لضمان هوية المستخدم","استخدام كلمة مرور واحدة فقط","استخدام بصمة الإصبع فقط","استخدام بطاقة الهوية فقط"], a:0},
+      { q:"ما الهندسة الاجتماعية (Social Engineering) في أمن المعلومات؟", o:["استغلال الإنسان بدلاً من الجهاز مثل شخص يتصل ويدّعي أنه من البنك وتُعتبر من أخطر الهجمات لأنها تعتمد على الثقة","اختراق الأجهزة مباشرة","تعطيل الشبكات بالقوة","تشفير البيانات بشكل غير قانوني"], a:0},
+      { q:"ما من أهمية أمن المعلومات في المؤسسات؟", o:["حماية قواعد البيانات وأنظمة الموظفين مع وجود سياسات أمنية وتحديد صلاحيات المستخدمين","السماح للجميع بالوصول لكل البيانات","إلغاء كلمات المرور لتسهيل الوصول","مشاركة البيانات السرية عبر الإنترنت"], a:0},
+      { q:"ما من أخلاقيات الأمن السيبراني؟", o:["استخدام المعرفة للحماية وليس للاختراق واحترام خصوصية الآخرين والالتزام بالقوانين","مشاركة البيانات السرية مع الأصدقاء","اختراق الأنظمة لاختبارها دون إذن","استخدام المعلومات الشخصية للآخرين بحرية"], a:0},
+      { q:"لماذا تُعدّ شبكات Wi-Fi العامة بيئة خطرة للبيانات؟", o:["لأنها غير مؤمّنة مما يُسهّل اعتراض البيانات المتبادلة عليها","لأنها بطيئة جداً","لأنها تستهلك الطاقة بسرعة","لأنها مجانية وغير موثوقة"], a:0},
+      { q:"ما استخدام VPN (الشبكة الافتراضية الخاصة) لأمن الشبكات؟", o:["يُشفّر الاتصال ويُخفي الموقع الجغرافي للمستخد
